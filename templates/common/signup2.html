@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<h1 class="nav-h1">회원가입 페이지2</h1>
+
+<div class="wrapper">
+	<h1>회원가입2</h1>
+	<form method="POST">
+		{% csrf_token %}
+		{% form %}
+	<input type="submit" class="btn btn-primary" value="Sign Up">
+	</form>
+</div>
+
+{% endblock %}
