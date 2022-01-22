@@ -1,0 +1,26 @@
+<!-- ##################################################### -->
+<!-- CSS의 자리 배치를 <head> 태그로 옮기기 위한 샘플 양식 -->
+<!-- ##################################################### -->
+
+{% load static %}
+
+<!-- header -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-wdth, initial-scale=1, shrink-to-fit=no">
+    <!-- CSS -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/test.css' %}">
+    <!-- 타이틀 -->
+    <title>Kodeal</title>
+</head>
+<body>
+    {% include 'navBar.html' %}
+    <!-- ########## 기본 템플릿 안에 삽입될 내용 start ########## -->
+    {% block content %}
+    {% endblock %}
+    <!-- ########## 기본 템플릿 안에 삽입될 내용  end  ########## -->
+</body>
+</html>

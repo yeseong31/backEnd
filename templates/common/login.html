@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load socialaccount %}
+
+<h1 class="nav-h1">로그인 페이지</h1>
+
+<div>
+    <form method="post" class="post-form" action="{% url 'common:login_main' %}">
+        <!-- 보안을 위한 난수 생성기 -->
+        {% csrf_token %}
+        {% include "form_errors.html" %}
+        <div>
+            <label for="userid"> 사용자 ID </label>
+            <input type="text" name="userid" id="userid"
+                   value="{{ form.userid.value|default_if_none:'' }}">
+        </div>
+        <div>
+            <label for="password"> 비밀번호 </label>
+            <input type="password" name="password" id="password"
+                   value="{{ form.password.value|default_if_none:'' }}">
+        </div>
+        <button type="submit"> 로그인 </button>
+    </form>
+    <a href="{% provider_login_url 'google' %}">Google 로그인</a>
+</div>
+
+{% endblock %}
