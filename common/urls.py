@@ -21,6 +21,5 @@ urlpatterns = [
     path('logout/', logout_main, name='logout_main'),
 
     # 아이디 중복 확인
-    # path('signup/check/id/', duplicate_id_check, name='duplicate_id_check'),
     path('signup/check/id/', duplicate_id_check, name='duplicate_id_check'),
 ]

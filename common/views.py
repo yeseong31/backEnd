@@ -88,12 +88,6 @@ def logout_main(request):
     return render(request, 'home.html')
 
 
-# 아이디 중복확인
-# def duplicate_id_check(request):
-#     if request.method == 'POST':
-#         return render(request, 'common/duplicate_id_check.html')
-
-
 def duplicate_id_check(request):
     if request.method == 'POST':
         check_userid = request.POST.get('check_userid', None)  # 아이디
