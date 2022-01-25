@@ -5,47 +5,82 @@
 <h1 class="nav-h1">회원가입 페이지</h1>
 
 <div>
-    <form method="post" class="post-form">
+    <form method="post" id="server" class="post-form">
         <!-- 보안을 위한 난수 생성기 -->
         {% csrf_token %}
         {% include "form_errors.html" %}
-        <div style="float:left; margin-right:20px;">
+        <div style="margin-right:20px;">
             <label for="username"> 사용자 이름 </label>
             <input type="text" name="username" id="username"
-                   value="{{ form.username.value|default_if_none:'' }}">
+                   value="{{ form.username.value|default_if_none:'' }}" required>
         </div>
-        <div>
-            <button type="button" value="signup"> 이름 중복확인 </button>
-        </div>
-        <div style="float:left; margin-right:20px;">
-            <label for="userid"> 사용자 ID </label>
-            <input type="text" name="userid" id="userid"
-                   value="{{ form.userid.value|default_if_none:'' }}">
-        </div>
-        <div>
-            <button type="button" value="signup"> 아이디 중복확인 </button>
+        <div style="margin-right:20px;">
+            <span>사용자 ID</span>
+            <input type="text" name="userid" id="userid" class="userid_input"
+                   value="{{ form.userid.value|default_if_none:'' }}" required readonly>
+            <button type="button" id="add_feed">아이디 입력 및 중복확인</button>
+            <img id="id_check_success" style="display: none;" src="{% static 'image/check.png' %}" width="20px">
         </div>
         <div>
             <label for="password1"> 비밀번호 </label>
             <input type="password" name="password1" id="password1"
-                   value="{{ form.password1.value|default_if_none:'' }}">
+                   value="{{ form.password1.value|default_if_none:'' }}" required>
         </div>
         <div>
             <label for="password2"> 비밀번호 확인 </label>
             <input type="password" name="password2" id="password2"
-                   value="{{ form.password2.value|default_if_none:'' }}">
+                   value="{{ form.password2.value|default_if_none:'' }}" required>
         </div>
-        <div style="float:left; margin-right:20px;">
+        <div style="margin-right:20px;">
             <label for="email"> 이메일 </label>
             <input type="email" name="email" id="email"
-                   value="{{ form.email.value|default_if_none:'' }}">
-        </div>
-        <div>
+                   value="{{ form.email.value|default_if_none:'' }}" required>
             <button type="button" value="signup"> 이메일 인증 </button>
         </div>
         <br/>
         <button type="submit" value="signup"> 회원가입 </button>
     </form>
 </div>
+
+<script>
+    // 모달창 띄우기
+    const modal = document.getElementById("modal_add_feed");
+    const buttonAddFeed = document.getElementById("add_feed");
+    /*
+        buttonAddFeed.addEventListener("click", e => {
+            modal.style.top = window.pageYOffset + 'px';  // top 속성으로 시작 y위치를 바꿈
+            modal.style.display = "flex";
+            document.body.style.overflowY = "hidden"; // 스크롤 없애기
+        });
+    */
+
+    // 모달 닫기
+    /*
+        const buttonCloseModal = document.getElementById("close_modal");
+        buttonCloseModal.addEventListener("click", e => {
+            modal.style.display = "none";
+            document.body.style.overflowY = "visible";
+        });
+    */
+
+    // 아이디 중복확인
+    /*
+        document.getElementById("buttonAddFeed").onclick=function() {
+            var gsWin = window.open("about:blank", "winName", "width=400,height=300,top=100,left=200");
+            var fr = document.getElementById("server");
+            fr.action = "check/id/";
+            fr.target = "winName";
+            fr.submit();
+        }
+    */
+
+    buttonAddFeed.addEventListener("click", e => {
+        var gsWin = window.open("about:blank", "winName", "width=400, height=400, top=100, left=300");
+        var fr = document.getElementById("server");
+        fr.action = "check/id/";
+        fr.target = "winName";
+        fr.submit();
+    });
+</script>
 
 {% endblock %}

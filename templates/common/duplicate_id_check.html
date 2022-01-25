@@ -1,0 +1,37 @@
+<!--<div id="modal_add_feed" class="modal_overlay">-->
+<!--    <div class="modal_window">-->
+<!--        <div class="modal_title">-->
+<!--            <div class="modal_title_side"></div>-->
+<!--            <div> 아이디 입력창 </div>-->
+<!--            <div class="modal_title_side">-->
+<!--                <button type="button" id="close_modal" class="material-icons-outlined">X</button>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <label for="userid"> 사용자 ID </label>-->
+<!--        <input type="text" name="userid" id="userid" class="userid_input"-->
+<!--               value="{{ form.userid.value|default_if_none:'' }}" required>-->
+<!--        <button type="button" id="id_overlap_button">아이디 중복 확인</button>-->
+<!--    </div>-->
+<!--</div>-->
+
+
+<form method="post" class="post-form" action="{% url 'common:duplicate_id_check' %}">
+    <!-- 보안을 위한 난수 생성기 -->
+    {% csrf_token %}
+    {% include "form_errors.html" %}
+    <label for="check_userid"> 사용자 ID </label>
+    <input type="text" name="check_userid" id="check_userid" class="userid_input"
+           placeholder="아이디를 입력하세요"
+           value="{{ form.userid.value|default_if_none:'' }}" required>
+    <button type="submit">중복 확인</button>
+
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>
+                    {{ message }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</form>
