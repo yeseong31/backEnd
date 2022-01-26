@@ -15,6 +15,12 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/test.css' %}">
     <!-- 타이틀 -->
     <title>Kodeal</title>
+    <script>
+        axios.defaults.xsrfCookieName = 'csrftoken'
+        axios.defaults.xsrfHeaderName = "X-CSRFToken"
+        axios.defaults.headers.common['X-CSRFToken'] = getCookie("csrftoken");
+    </script>
+
 </head>
 <body>
     {% include 'navBar.html' %}

@@ -5,7 +5,7 @@
 <h1 class="nav-h1">회원가입 페이지</h1>
 
 <div>
-    <form method="post" id="server" class="post-form">
+    <form method="post" id="server" class="post-form" action="{% url 'common:signup' %}">
         <!-- 보안을 위한 난수 생성기 -->
         {% csrf_token %}
         {% include "form_errors.html" %}
@@ -17,7 +17,7 @@
         <div style="margin-right:20px;">
             <span>사용자 ID</span>
             <input type="text" name="userid" id="userid" class="userid_input"
-                   value="{{ form.userid.value|default_if_none:'' }}" required readonly>
+                   value="{{ form.userid.value|default_if_none:'' }}" required>
             <button type="button" id="add_feed">아이디 입력 및 중복확인</button>
             <img id="id_check_success" style="display: none;" src="{% static 'image/check.png' %}" width="20px">
         </div>
