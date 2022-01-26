@@ -1,11 +1,16 @@
+import json
+
 from django.contrib import auth
 from django.contrib.auth.forms import UserCreationForm
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.views import View
 
 from common.models import User
 
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 
 def index(request):
     return render(request, 'home.html')
@@ -41,7 +46,8 @@ def signup(request):
         return render(request, 'home.html', res_data)
 
 
-# 회뭔가입을 진행하는 함수2
+# 회원가입을 진행하는 함수2
+@method_decorator(csrf_exempt, name='dispatch')
 def signup2(request):
     if request.method == 'POST':
         # 비밀번호 일치 시
@@ -99,3 +105,47 @@ def duplicate_id_check(request):
             print('사용 가능한 아이디입니다.')
             messages.warning(request, '사용 가능한 아이디입니다!')
             return render(request, 'common/duplicate_id_check.html')
+
+
+# models.py에서 생성한 데이터를 주고 받고 저장하는 클래스(회원가입)
+class SignupView(View):
+    # POST 요청 시 userid와 password를 저장
+    def post(self, request):
+        data = json.loads(request.body)
+        User.objects.create_user(
+            username=data['username'],
+            userid=data['userid'],
+            password=data['password1'],
+            email=data['email'],
+        )
+        return HttpResponse(status=200)
+
+    # GET 요청 시 common 테이블에 저장된 리스트를 출력
+    def get(self, request):
+        user_data = User.objects.values()
+        return JsonResponse({'users': list(user_data)}, status=200)
+
+
+# 로그인
+# class LoginView(View):
+#     def post(self, request):
+#         data = json.loads(request.body)
+#
+#         # Http request로 받은 json 파일을 통헤 테이블에 저장된 userid와 password를 비교
+#         try:
+#             if User.objects.filter(userid=data['userid']).exists():
+#                 user = User.objects.get(userid=data['userid'])
+#
+#                 if user.password == data['password']:
+#                     return HttpResponse(status=200)  # 200: OK
+#                 else:
+#                     return HttpResponse(status=401)  # 401: 인증 정보 부족으로 진행 X
+#             else:
+#                 return HttpResponse(status=400)  # 400: Bad request
+#         except KeyError:
+#             return JsonResponse({'message': 'INVALID_KEYS'}, status=400)
+
+
+
+
+
