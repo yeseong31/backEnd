@@ -4,7 +4,6 @@ from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib import messages
 
-# home
 from common.models import User
 
 
@@ -12,7 +11,7 @@ def index(request):
     return render(request, 'home.html')
 
 
-# 회뭔가입을 진행하는 함수
+# 회원가입을 진행하는 함수
 def signup(request):
     # GET 방식 호출일 때
     if request.method == 'GET':
@@ -71,12 +70,12 @@ def login_main(request):
         user = auth.authenticate(request, userid=userid, password=password)
 
         if user is None:
-            # print('userid 또는 password가 틀렸습니다.')
+            print('userid 또는 password가 틀렸습니다.')
             return render(request, 'common/login.html', {'error': 'username 또는 password가 틀렸습니다.'})
         else:
             auth.login(request, user)
             return redirect('/')
-    else:
+    elif request.method == 'GET':
         return render(request, 'common/login.html')
 
 
