@@ -5,7 +5,7 @@
 <h1 class="nav-h1">회원가입 페이지</h1>
 
 <div>
-    <form method="post" id="server" class="post-form" action="{% url 'common:signup' %}">
+    <form method="post" id="server" class="post-form">
         <!-- 보안을 위한 난수 생성기 -->
         {% csrf_token %}
         {% include "form_errors.html" %}
@@ -35,52 +35,16 @@
             <label for="email"> 이메일 </label>
             <input type="email" name="email" id="email"
                    value="{{ form.email.value|default_if_none:'' }}" required>
-            <button type="button" value="signup"> 이메일 인증 </button>
+            <button type="button" id="emailCheck"> 이메일 인증번호 받기 </button>
         </div>
         <br/>
         <button type="submit" value="signup"> 회원가입 </button>
     </form>
 </div>
 
-<script>
-    // 모달창 띄우기
-    const modal = document.getElementById("modal_add_feed");
-    const buttonAddFeed = document.getElementById("add_feed");
-    /*
-        buttonAddFeed.addEventListener("click", e => {
-            modal.style.top = window.pageYOffset + 'px';  // top 속성으로 시작 y위치를 바꿈
-            modal.style.display = "flex";
-            document.body.style.overflowY = "hidden"; // 스크롤 없애기
-        });
-    */
-
-    // 모달 닫기
-    /*
-        const buttonCloseModal = document.getElementById("close_modal");
-        buttonCloseModal.addEventListener("click", e => {
-            modal.style.display = "none";
-            document.body.style.overflowY = "visible";
-        });
-    */
-
-    // 아이디 중복확인
-    /*
-        document.getElementById("buttonAddFeed").onclick=function() {
-            var gsWin = window.open("about:blank", "winName", "width=400,height=300,top=100,left=200");
-            var fr = document.getElementById("server");
-            fr.action = "check/id/";
-            fr.target = "winName";
-            fr.submit();
-        }
-    */
-
-    buttonAddFeed.addEventListener("click", e => {
-        var gsWin = window.open("about:blank", "winName", "width=400, height=400, top=100, left=300");
-        var fr = document.getElementById("server");
-        fr.action = "check/id/";
-        fr.target = "winName";
-        fr.submit();
-    });
-</script>
+<!--<script language="JavaScript">-->
+<!--    userid = document.getElementById('#userid').value-->
+<!--    location.href="common/auth_email.html?" + "userid" + ": " + userid-->
+<!--</script>-->
 
 {% endblock %}
