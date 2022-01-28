@@ -2,7 +2,7 @@ import json
 
 from django.contrib import auth
 from django.http import JsonResponse, HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.utils.encoding import force_text
 from django.utils.http import urlsafe_base64_decode
@@ -187,10 +187,15 @@ class Auth(View):
             user = User.objects.get(userid=userid)
             # 두 auth_num을 비교... 같으면 회원가입 성공
             if user.auth_num == auth_num:
+                user.auth_num = None
                 return render(request, 'common/auth_email_complete.html')
-            # 다르면 다시 회원가입 진행
+            # 다르면 사용자 정보 삭제 후 다시 회원가입 진행
             else:
+                user.delete()
                 return render(request, 'common/signup.html')
         else:
             return render(request, 'common/signup.html')
+
+
+
 
