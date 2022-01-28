@@ -187,7 +187,9 @@ class Auth(View):
             user = User.objects.get(userid=userid)
             # 두 auth_num을 비교... 같으면 회원가입 성공
             if user.auth_num == auth_num:
+                # user.set_initialize_auth_num(userid)
                 user.auth_num = None
+                user.save()
                 return render(request, 'common/auth_email_complete.html')
             # 다르면 사용자 정보 삭제 후 다시 회원가입 진행
             else:
