@@ -1,17 +1,19 @@
 import json
 
-import bcrypt as bcrypt
 from django.contrib import auth
-from django.contrib.auth.forms import UserCreationForm
 from django.http import JsonResponse, HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+from django.utils.encoding import force_text
+from django.utils.http import urlsafe_base64_decode
 from django.views import View
 
-from common.models import User
+from .mail import email_auth_num
 
-from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
+from common.models import User
+from django.core.mail import EmailMessage
+from django.core.exceptions import ValidationError
+
 
 def index(request):
     return render(request, 'home.html')
@@ -42,9 +44,17 @@ def signup(request):
         if password1 != password2:
             res_data['error'] = '비밀번호가 일치하지 않습니다.'
         else:
-            user = User.objects.create_user(userid=userid, username=username, email=email, password=password1)
+            # 이메일 인증번호 발송
+            auth_num = email_auth_num()
+            print(auth_num)
+            EmailMessage(subject='이메일 인증 코드입니다.',
+                         body=f'다음의 코드를 입력하세요\n{auth_num}',
+                         to=[email]).send()
+
+            user = User.objects.create_user(userid=userid, username=username, email=email,
+                                            password=password1, auth_num=auth_num)
             user.save()
-        return render(request, 'home.html', res_data)
+        return render(request, 'common/auth_email.html', {'userid': userid})
 
 
 # 일반 로그인
@@ -88,58 +98,105 @@ def duplicate_id_check(request):
 
 # models.py에서 생성한 데이터를 주고 받고 저장하는 클래스(회원가입)
 class SignupView(View):
-    # POST 요청 시 userid와 password를 저장
+    # POST 요청: 전달 받은 데이터를 DB에 저장
     def post(self, request):
         data = json.loads(request.body)
-        # User.objects.create_user(
-        #     username=data['username'],
-        #     userid=data['userid'],
-        #     password=data['password1'],
-        #     email=data['email'],
-        # )
+
+        username = data['username']
+        userid = data['userid']
+        password1 = data['password1']
+        password2 = data['password2']
+        email = data['email']
+
+        # 입력하지 않은 칸 확인
+        if not (username and userid and password1 and password2 and email):
+            return JsonResponse({'message': '입력하지 않은 칸이 있습니다.'}, status=400)
+        # 아이디 중복 확인
+        if User.objects.filter(userid=userid).exists():
+            return JsonResponse({'message': '이미 존재하는 아이디입니다.'}, status=400)
+        # 비밀번호 비교
+        if password1 != password2:
+            return JsonResponse({'message': '비밀번호가 일치하지 않습니다.'}, status=400)
+
+        # 이메일 인증번호 발송
+        auth_num = email_auth_num()
+        print(auth_num)
+        EmailMessage(subject='이메일 인증 코드입니다.',
+                     body=f'다음의 코드를 입력하세요\n{auth_num}',
+                     to=[email]).send()
+
+        # 사용자 생성
+        User.objects.create_user(
+            username=username,
+            userid=userid,
+            password=password1,
+            email=email,
+            auth_num=auth_num
+        ).save()
+
         # return HttpResponse(status=200)
+        return render(request, 'common/auth_email.html')
 
-        try:
-            if User.objects.filter(userid = data['userid']).exists():
-                return JsonResponse({'message': 'EXISTS_EMAIL'}, status=400)
-
-            User.objects.create_user(
-                userid=data['userid'],
-                password=bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt()).decode('utf-8'),
-                username=data['username'],
-                email=data['email']
-            ).save()
-
-            return HttpResponse(status=200)
-
-        except KeyError:
-            return JsonResponse({'message': 'INVALID_KEYS'}, status=400)
-
-    # GET 요청 시 common 테이블에 저장된 리스트를 출력
-    # def get(self, request):
-    #     user_data = User.objects.values()
-    #     return JsonResponse({'users': list(user_data)}, status=200)
+    # GET 요청: common 테이블에 저장된 리스트를 출력
+    def get(self, request):
+        return render(request, 'common/signup.html')
+        # user_data = User.objects.values()
+        # return JsonResponse({'users': list(user_data)}, status=200)
 
 
 # 로그인
-# class LoginView(View):
-#     def post(self, request):
-#         data = json.loads(request.body)
-#
-#         # Http request로 받은 json 파일을 통헤 테이블에 저장된 userid와 password를 비교
-#         try:
-#             if User.objects.filter(userid=data['userid']).exists():
-#                 user = User.objects.get(userid=data['userid'])
-#
-#                 if user.password == data['password']:
-#                     return HttpResponse(status=200)  # 200: OK
-#                 else:
-#                     return HttpResponse(status=401)  # 401: 인증 정보 부족으로 진행 X
-#             else:
-#                 return HttpResponse(status=400)  # 400: Bad request
-#         except KeyError:
-#             return JsonResponse({'message': 'INVALID_KEYS'}, status=400)
+class LoginView(View):
+    def post(self, request):
+        data = json.loads(request.body)
+        userid = data['userid']
+        password = data['password']
 
+        # Http request로 받은 json 파일을 통헤 테이블에 저장된 userid와 password를 비교
+        try:
+            if User.objects.filter(userid=userid).exists():
+                user = User.objects.get(userid=userid)
+
+                if user.password == password:
+                    return HttpResponse(status=200)  # 200: OK
+                else:
+                    return HttpResponse(status=401)  # 401: 인증 정보 부족으로 진행 X
+            else:
+                return HttpResponse(status=400)  # 400: Bad request
+        except KeyError:
+            return JsonResponse({'message': 'INVALID_KEYS'}, status=400)
+
+    def get(self, request):
+        return render(request, 'common/login.html')
+        # user_data = User.objects.values()
+        # return JsonResponse({'users': list(user_data)}, status=200)
+
+
+# 인증번호 입력에 대한 처리
+class Auth(View):
+    def post(self, request):
+        # 1-1) JSON으로 진행하는 경우
+        # data = json.loads(request.body)
+        # auth_num = data['auth_num']
+
+        # 1-2) 일반 request로 진행하는 경우
+        auth_num = request.POST['auth_num']
+        userid = request.POST['userid']
+
+        # 2) DB에 저장된 인증번호와 사용자의 입력을 비교
+        if User.objects.filter(userid=userid).exists():
+            user = User.objects.get(userid=userid)
+            # 두 auth_num을 비교... 같으면 회원가입 성공
+            if user.auth_num == auth_num:
+                # user.set_initialize_auth_num(userid)
+                user.auth_num = None
+                user.save()
+                return render(request, 'common/auth_email_complete.html')
+            # 다르면 사용자 정보 삭제 후 다시 회원가입 진행
+            else:
+                user.delete()
+                return render(request, 'common/signup.html')
+        else:
+            return render(request, 'common/signup.html')
 
 
 
