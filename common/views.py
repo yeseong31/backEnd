@@ -1,5 +1,6 @@
 import json
 
+import bcrypt as bcrypt
 from django.contrib import auth
 from django.contrib.auth.forms import UserCreationForm
 from django.http import JsonResponse, HttpResponse
@@ -46,28 +47,6 @@ def signup(request):
         return render(request, 'home.html', res_data)
 
 
-# 회원가입을 진행하는 함수2
-@method_decorator(csrf_exempt, name='dispatch')
-def signup2(request):
-    if request.method == 'POST':
-        # 비밀번호 일치 시
-        if request.POST['password1'] == request.POST['password2']:
-            user = User.objects.create_user(
-                username=request.POST['username'],
-                password=request.POST['password1'],
-                email=request.POST['email'],
-            )
-            auth.login(request, user)
-            return redirect('/')  # 메인 페이지(index)로 이동
-        # 비밀번호 불일치 시
-        else:
-            return render(request, 'common/signup.html')
-    else:
-        # 정상적인 회원가입 확인을 위해 로그인, 로그아웃 기능 추가
-        form = UserCreationForm
-        return render(request, 'common/signup.html', {'form': form})
-
-
 # 일반 로그인
 def login_main(request):
     if request.method == 'POST':
@@ -112,18 +91,34 @@ class SignupView(View):
     # POST 요청 시 userid와 password를 저장
     def post(self, request):
         data = json.loads(request.body)
-        User.objects.create_user(
-            username=data['username'],
-            userid=data['userid'],
-            password=data['password1'],
-            email=data['email'],
-        )
-        return HttpResponse(status=200)
+        # User.objects.create_user(
+        #     username=data['username'],
+        #     userid=data['userid'],
+        #     password=data['password1'],
+        #     email=data['email'],
+        # )
+        # return HttpResponse(status=200)
+
+        try:
+            if User.objects.filter(userid = data['userid']).exists():
+                return JsonResponse({'message': 'EXISTS_EMAIL'}, status=400)
+
+            User.objects.create_user(
+                userid=data['userid'],
+                password=bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt()).decode('utf-8'),
+                username=data['username'],
+                email=data['email']
+            ).save()
+
+            return HttpResponse(status=200)
+
+        except KeyError:
+            return JsonResponse({'message': 'INVALID_KEYS'}, status=400)
 
     # GET 요청 시 common 테이블에 저장된 리스트를 출력
-    def get(self, request):
-        user_data = User.objects.values()
-        return JsonResponse({'users': list(user_data)}, status=200)
+    # def get(self, request):
+    #     user_data = User.objects.values()
+    #     return JsonResponse({'users': list(user_data)}, status=200)
 
 
 # 로그인
