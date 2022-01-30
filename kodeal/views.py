@@ -1,10 +1,10 @@
 from django.shortcuts import render
+from config import my_settings
 
 import openai
 
 # OpenAI API 키, 항상 비워놓고 push하기
-with open('kodeal/OpenAI_Codex_Key.txt', encoding='utf-8') as f:
-    openai.api_key = f.readline()
+openai.api_key = my_settings.OPENAI_CODEX_KEY
 openai.Engine.list()
 
 
@@ -25,7 +25,7 @@ def qna_main(request):
         user_text = request.POST['text_area']  # 질문 영역
         # codex 변환 과정
         response = openai.Completion.create(
-            engine="text-curie-001",  # 원래는 davinci-codex
+            engine="code-davinci-001",  # 원래는 davinci-codex
             prompt=user_text,
             temperature=0,
             max_tokens=128,
