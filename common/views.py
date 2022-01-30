@@ -46,7 +46,6 @@ def signup(request):
         else:
             # 이메일 인증번호 발송
             auth_num = email_auth_num()
-            print(auth_num)
             EmailMessage(subject='이메일 인증 코드입니다.',
                          body=f'다음의 코드를 입력하세요\n{auth_num}',
                          to=[email]).send()
@@ -120,7 +119,6 @@ class SignupView(View):
 
         # 이메일 인증번호 발송
         auth_num = email_auth_num()
-        print(auth_num)
         EmailMessage(subject='이메일 인증 코드입니다.',
                      body=f'다음의 코드를 입력하세요\n{auth_num}',
                      to=[email]).send()

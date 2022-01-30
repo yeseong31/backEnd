@@ -51,7 +51,7 @@ class User(AbstractBaseUser):
                               unique=True, verbose_name='사용자 아이디')
     username = models.CharField(max_length=50, null=False, blank=False, verbose_name='사용자 이름')
     email = models.EmailField(verbose_name='이메일', max_length=255, unique=True, null=False, blank=False)
-    auth_num = models.CharField(verbose_name='인증번호', max_length=9, null=True)
+    auth_num = models.CharField(verbose_name='인증번호', max_length=8, null=True)
     # 아래 두 개의 필드는 Django의 User Model을 구성할 때 필수로 요구되는 항목
     is_active = models.BooleanField(default=True)  # 이메일 인증 시 활용되는 속성
     is_admin = models.BooleanField(default=False)
