@@ -96,17 +96,18 @@ def duplicate_id_check(request):
             return render(request, 'common/duplicate_id_check.html')
 
 
-# models.py에서 생성한 데이터를 주고 받고 저장하는 클래스(회원가입)
+# ++++++++++++++++++++++++++ JSON으로 회원가입/로그인 ++++++++++++++++++++++++++
+# 회원가입
 class SignupView(View):
     # POST 요청: 전달 받은 데이터를 DB에 저장
     def post(self, request):
         data = json.loads(request.body)
 
-        username = data['username']
-        userid = data['userid']
-        password1 = data['password1']
-        password2 = data['password2']
-        email = data['email']
+        username = data['username']  # 이름
+        userid = data['userid']  # 아이디
+        password1 = data['password1']  # 비밀번호
+        password2 = data['password2']  # 비밀번호(확인)
+        email = data['email']  # 이메일
 
         # 입력하지 않은 칸 확인
         if not (username and userid and password1 and password2 and email):
@@ -120,7 +121,7 @@ class SignupView(View):
 
         # 이메일 인증번호 발송
         auth_num = email_auth_num()
-        print(auth_num)
+        # print(auth_num)
         EmailMessage(subject='이메일 인증 코드입니다.',
                      body=f'다음의 코드를 입력하세요\n{auth_num}',
                      to=[email]).send()
@@ -133,15 +134,13 @@ class SignupView(View):
             email=email,
             auth_num=auth_num
         ).save()
+        # 회원가입이 완료되면 사용자의 아이디를 return
+        return JsonResponse({'userid': userid}, status=200)
 
-        # return HttpResponse(status=200)
-        return render(request, 'common/auth_email.html')
-
-    # GET 요청: common 테이블에 저장된 리스트를 출력
+    # GET 요청: common 테이블에 저장된 리스트를 출력(임시)
     def get(self, request):
-        return render(request, 'common/signup.html')
-        # user_data = User.objects.values()
-        # return JsonResponse({'users': list(user_data)}, status=200)
+        user_data = User.objects.values()
+        return JsonResponse({'users': list(user_data)}, status=200)
 
 
 # 로그인
@@ -177,6 +176,7 @@ class Auth(View):
         # 1-1) JSON으로 진행하는 경우
         # data = json.loads(request.body)
         # auth_num = data['auth_num']
+        # userid = data['userid']
 
         # 1-2) 일반 request로 진행하는 경우
         auth_num = request.POST['auth_num']
