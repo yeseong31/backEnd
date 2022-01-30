@@ -15,7 +15,7 @@ urlpatterns = [
     # 일반 로그인
     path('login/', login_main, name='login_main'),
     path('logout/', logout_main, name='logout_main'),
-    path('login2/', LoginView.as_view(), name='login_main2'),  # Json으로 로그인 (react에서 사용)
+    # path('login2/', LoginView.as_view(), name='login_main2'),  # Json으로 로그인 (react에서 사용)
 
     # 아이디 중복 확인
     path('signup/check/id/', duplicate_id_check, name='duplicate_id_check'),
