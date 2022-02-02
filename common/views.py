@@ -2,17 +2,14 @@ import json
 
 from django.contrib import auth
 from django.http import JsonResponse, HttpResponse
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect
 from django.contrib import messages
-from django.utils.encoding import force_text
-from django.utils.http import urlsafe_base64_decode
 from django.views import View
 
 from .mail import email_auth_num
 
 from common.models import User
 from django.core.mail import EmailMessage
-from django.core.exceptions import ValidationError
 
 
 def index(request):
@@ -156,11 +153,11 @@ class LoginView(View):
         userid = data['userid']
         password = data['password']
 
-        # Http request로 받은 json 파일을 통헤 테이블에 저장된 userid와 password를 비교
         try:
+            # 해당 아이디의 사용자가 존재한다면
             if User.objects.filter(userid=userid).exists():
                 user = User.objects.get(userid=userid)
-
+                # 입력한 비밀번호가 사용자의 비밀번호와 일치한다면
                 if user.password == password:
                     return HttpResponse(status=200)  # 200: OK
                 else:
@@ -171,9 +168,9 @@ class LoginView(View):
             return JsonResponse({'message': 'INVALID_KEYS'}, status=400)
 
     def get(self, request):
-        return render(request, 'common/login.html')
-        # user_data = User.objects.values()
-        # return JsonResponse({'users': list(user_data)}, status=200)
+        # return render(request, 'common/login.html')
+        user_data = User.objects.values()
+        return JsonResponse({'users': list(user_data)}, status=200)
 
 
 # 인증번호 입력에 대한 처리
