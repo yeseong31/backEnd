@@ -21,5 +21,5 @@ urlpatterns = [
     path('signup/check/id/', duplicate_id_check, name='duplicate_id_check'),
     # 이메일 인증번호 확인
     path('signup/auth/email', Auth.as_view(), name='auth_email'),
-    path('signup/auth/email/comp', Auth.as_view(), name='auth_email'),
+    path('signup/auth/email/comp', auth_email_complete, name='auth_email_complete'),
 ]
