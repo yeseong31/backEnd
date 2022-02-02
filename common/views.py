@@ -91,6 +91,8 @@ def duplicate_id_check(request):
             print('사용 가능한 아이디입니다.')
             messages.warning(request, '사용 가능한 아이디입니다!')
             return render(request, 'common/duplicate_id_check.html')
+    elif request.method == 'GET':
+        return render(request, 'common/duplicate_id_check.html')
 
 
 # ++++++++++++++++++++++++++ JSON으로 회원가입/로그인 ++++++++++++++++++++++++++
@@ -98,17 +100,17 @@ def duplicate_id_check(request):
 class SignupView(View):
     # POST 요청: 전달 받은 데이터를 DB에 저장
     def post(self, request):
-        data = json.loads(request.body)
-        username = data['username']  # 이름
-        userid = data['userid']  # 아이디
-        password1 = data['password1']  # 비밀번호
-        password2 = data['password2']  # 비밀번호(확인)
-        email = data['email']  # 이메일
-        # username = request.POST.get('username', None)  # 이름
-        # userid = request.POST.get('userid', None)  # 아이디
-        # password1 = request.POST.get('password1', None)  # 비밀번호
-        # password2 = request.POST.get('password2', None)  # 비밀번호(확인)
-        # email = request.POST.get('email', None)  # 이메일
+        # data = json.loads(request.body)
+        # username = data['username']  # 이름
+        # userid = data['userid']  # 아이디
+        # password1 = data['password1']  # 비밀번호
+        # password2 = data['password2']  # 비밀번호(확인)
+        # email = data['email']  # 이메일
+        username = request.POST.get('username', None)  # 이름
+        userid = request.POST.get('userid', None)  # 아이디
+        password1 = request.POST.get('password1', None)  # 비밀번호
+        password2 = request.POST.get('password2', None)  # 비밀번호(확인)
+        email = request.POST.get('email', None)  # 이메일
 
         # 입력하지 않은 칸 확인
         if not (username and userid and password1 and password2 and email):
@@ -137,23 +139,23 @@ class SignupView(View):
         user.save()
 
         # 이메일 인증 페이지로 이동
-        # return render(request, 'common/auth_email.html', {'userid': userid})
-        return JsonResponse({'message': "Go to... '/signup/auth/email'", 'status': 200}, status=200)
+        return render(request, 'common/auth_email.html', {'userid': userid})
+        # return JsonResponse({'message': "Go to... '/signup/auth/email'", 'status': 200}, status=200)
 
     # GET 요청: common 테이블에 저장된 리스트를 출력(임시)
     def get(self, request):
-        # return render(request, 'common/signup.html')
-        return JsonResponse({'message': "Go to... '/signup'", 'status': 200}, status=200)
+        return render(request, 'common/signup.html')
+        # return JsonResponse({'message': "Go to... '/signup'", 'status': 200}, status=200)
 
 
 # 로그인
 class LoginView(View):
     def post(self, request):
-        data = json.loads(request.body)
-        userid = data['userid']
-        password = data['password']
-        # userid = request.POST['userid']
-        # password = request.POST['password']
+        # data = json.loads(request.body)
+        # userid = data['userid']
+        # password = data['password']
+        userid = request.POST['userid']
+        password = request.POST['password']
 
         try:
             # 해당 아이디의 사용자가 존재한다면
@@ -163,7 +165,8 @@ class LoginView(View):
                 if user.password == password:
                     # 로그인 완료
                     auth.login(request, user, backend='django.contrib.auth.backends.ModelBackend')
-                    return JsonResponse({'message': "Go to... '/home'", 'status': 200}, status=200)
+                    return redirect('/')
+                    # return JsonResponse({'message': "Go to... '/home'", 'status': 200}, status=200)
                 # 그렇지 않다면 400 Error
                 return JsonResponse({'message': "Enter invalid authentication information", 'status': 401}, status=401)
             else:
@@ -172,19 +175,19 @@ class LoginView(View):
             return JsonResponse({'message': 'INVALID_KEYS', 'status': 400}, status=400)
 
     def get(self, request):
-        # return render(request, 'common/login.html')
-        return JsonResponse({'message': "Go to... '/login'", 'status': 200}, status=200)
+        return render(request, 'common/login.html')
+        # return JsonResponse({'message': "Go to... '/login'", 'status': 200}, status=200)
 
 
 # 인증번호 입력에 대한 처리
 class Auth(View):
     def post(self, request):
         # 1) 입력한 정보를 전달받음
-        data = json.loads(request.body)
-        auth_num = data['auth_num']
-        userid = data['userid']
-        # auth_num = request.POST['auth_num']
-        # userid = request.POST['userid']
+        # data = json.loads(request.body)
+        # auth_num = data['auth_num']
+        # userid = data['userid']
+        auth_num = request.POST['auth_num']
+        userid = request.POST['userid']
 
         # 2) DB에 저장된 인증번호와 사용자의 입력을 비교
         if User.objects.filter(userid=userid).exists():
@@ -194,19 +197,31 @@ class Auth(View):
             if user.auth_num == auth_num:
                 user.auth_num = None
                 user.save()
-                # return redirect('/common/signup/auth/email/comp')
-                return JsonResponse({'message': "Go to... '/common/signup/auth/email/comp'", 'status': 200}, status=200)
+                return redirect('/common/signup/auth/email/comp')
+                # return JsonResponse({'message': "Go to... '/common/signup/auth/email/comp'", 'status': 200}, status=200)
             # 다르면 사용자 정보 삭제 후 다시 회원가입 진행
             else:
                 user.delete()
-                # return render(request, 'common/signup.html')
-                return JsonResponse({'message': "Go to... '/common/signup'", 'status': 200}, status=200)
+                return render(request, 'common/signup.html')
+                # return JsonResponse({'message': "Go to... '/common/signup'", 'status': 200}, status=200)
         else:
-            # return render(request, 'common/signup.html')
-            return JsonResponse({'message': "Go to... '/common/signup'", 'status': 200}, status=200)
+            return render(request, 'common/signup.html')
+            # return JsonResponse({'message': "Go to... '/common/signup'", 'status': 200}, status=200)
+
+
+# 이메일 인증 페이지
+def auth_email(request):
+    return render(request, 'common/auth_email.html')
+    # return JsonResponse({'message': "Go to... '/common/auth/email'", 'status': 200}, status=200)
 
 
 # 이메일 인증 완료 페이지
 def auth_email_complete(request):
-    # return render(request, 'common/auth_email_complete.html')
-    return JsonResponse({'message': "signup complete.", 'status': 200}, status=200)
+    return render(request, 'common/auth_email_complete.html')
+    # return JsonResponse({'message': "signup complete.", 'status': 200}, status=200)
+
+
+# 회원가입 완료 페이지
+def signup_complete(request):
+    return render(request, 'common/signup_complete.html')
+    # return JsonResponse({'message': "signup complete.", 'status': 200}, status=200)
