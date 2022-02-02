@@ -38,3 +38,4 @@ class UserAdmin(BaseUserAdmin):
 admin.site.register(User, UserAdmin)
 # 기본적으로 제공되는 Django의 Group은 사용하지 않음
 admin.site.unregister(Group)
+

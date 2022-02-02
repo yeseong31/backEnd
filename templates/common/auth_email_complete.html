@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container" align="center">
+    <font size="4" style="font-weight: 700;"> 회원가입 성공</font>
+    <button type="button" onclick="location.href='{% url 'kodeal:index' %}'"> 홈으로 </button>
+</div>
+
+<!--<script>-->
+<!--    temp = location.href.split("?");-->
+<!--    data = temp[1]-->
+<!--    document.write('아이디: ' + data);-->
+<!--</script>-->
+
+{% endblock %}
