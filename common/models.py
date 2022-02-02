@@ -26,7 +26,7 @@ class UserManager(BaseUserManager):
             auth_num=auth_num
         )
 
-        user.set_password(password)
+        # user.set_password(password)
         user.save(using=self._db)
         return user
 

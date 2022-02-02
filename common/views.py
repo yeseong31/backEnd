@@ -101,13 +101,18 @@ def duplicate_id_check(request):
 class SignupView(View):
     # POST 요청: 전달 받은 데이터를 DB에 저장
     def post(self, request):
-        data = json.loads(request.body)
+        # data = json.loads(request.body)
+        # username = data['username']  # 이름
+        # userid = data['userid']  # 아이디
+        # password1 = data['password1']  # 비밀번호
+        # password2 = data['password2']  # 비밀번호(확인)
+        # email = data['email']  # 이메일
 
-        username = data['username']  # 이름
-        userid = data['userid']  # 아이디
-        password1 = data['password1']  # 비밀번호
-        password2 = data['password2']  # 비밀번호(확인)
-        email = data['email']  # 이메일
+        username = request.POST.get('username', None)  # 이름
+        userid = request.POST.get('userid', None)  # 아이디
+        password1 = request.POST.get('password1', None)  # 비밀번호
+        password2 = request.POST.get('password2', None)  # 비밀번호(확인)
+        email = request.POST.get('email', None)  # 이메일
 
         # 입력하지 않은 칸 확인
         if not (username and userid and password1 and password2 and email):
@@ -139,8 +144,9 @@ class SignupView(View):
 
     # GET 요청: common 테이블에 저장된 리스트를 출력(임시)
     def get(self, request):
-        user_data = User.objects.values()
-        return JsonResponse({'users': list(user_data)}, status=200)
+        return render(request, 'common/signup.html')
+        # user_data = User.objects.values()
+        # return JsonResponse({'users': list(user_data)}, status=200)
 
 
 # 로그인
