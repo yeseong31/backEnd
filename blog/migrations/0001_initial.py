@@ -30,7 +30,7 @@ class Migration(migrations.Migration):
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
                 ('status', models.CharField(choices=[('draft', '초안'), ('public', '공공의')], default='draft', max_length=8)),
-                ('author', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='entries', to='blog.user')),
+                ('author', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='entries', to='blog.User')),
             ],
         ),
     ]
