@@ -2,8 +2,9 @@ from django.db import models
 
 
 class User(models.Model):
-    name = models.CharField(max_length=32)
-    mail = models.EmailField()
+    question = models.CharField(max_length=32)
+    code = models.CharField(max_length=254)
+    time = models.CharField(max_length=254)
 
 
 class Entry(models.Model):
