@@ -51,13 +51,18 @@ INSTALLED_APPS = [
     # blog
     'blog',
     'rest_framework',
+
+    # cors
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',    # cors 설정
+    'django.middleware.common.CommonMiddleware',    # cors 설정
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    #'django.middleware.csrf.CsrfViewMiddleware',                
+    # 'django.middleware.csrf.CsrfViewMiddleware',    # csrf를 이용하여 로그인 진행을 위해 주석 처리
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -153,8 +158,8 @@ SERVER_EMAIL = my_settings.EMAIL['SERVER_EMAIL']
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER  # 응답 메일 관련 설정
 
 # CSRF 토큰 설정(ajax 통신 시)
-CORS_ORIGIN_ALLOW_ALL = True
-CORS_ALLOW_CREDENTIALS = True
+CORS_ORIGIN_ALLOW_ALL = True    # 모든 호스트에 대해 cross-site 요청 허용(cors 및 csrf 설정)
+CORS_ALLOW_CREDENTIALS = True   # 쿠키가 cross-site HTTP 요청에 포함될 수 있음
 
 CSRF_TRUSTED_ORIGINS = (
     'localhost:8000',
@@ -188,3 +193,4 @@ CORS_ALLOW_HEADERS = (
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
