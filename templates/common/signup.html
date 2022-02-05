@@ -2,6 +2,13 @@
 {% load static %}
 {% block content %}
 
+<script>
+    function change() {
+        var gett = document.getElementById("userid").value;
+        console.log('가져온 텍스트: ', gett);
+    }
+</script>
+
 <h1 class="nav-h1">회원가입 페이지</h1>
 
 <div>
@@ -18,7 +25,7 @@
             <span>사용자 ID</span>
             <input type="text" name="userid" id="userid" class="userid_input"
                    value="{{ form.userid.value|default_if_none:'' }}" required>
-            <button type="button" id="add_feed">아이디 입력 및 중복확인</button>
+            <button type="button" id="add_feed" onclick="change();">아이디 입력 및 중복확인</button>
             <img id="id_check_success" style="display: none;" src="{% static 'image/check.png' %}" width="20px">
         </div>
         <div>
