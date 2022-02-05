@@ -58,11 +58,11 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',    # cors 설정
-    'django.middleware.common.CommonMiddleware',
+    'django.middleware.common.CommonMiddleware',    # cors 설정
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    # 'django.middleware.csrf.CsrfViewMiddleware',                # 이거 주석 처리 되어있길래 수정함 . 2.5 13:45
+    # 'django.middleware.csrf.CsrfViewMiddleware',    # csrf를 이용하여 로그인 진행을 위해 주석 처리
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -169,14 +169,6 @@ CORS_ORIGIN_WHITELIST = (
     'localhost:8000',
     '127.0.0.1:8000',
 )
-CORS_ALLOW_METHODS = [
-    'DELETE',
-    'GET',
-    'OPTIONS',
-    'PATCH',
-    'POST',
-    'PUT',
-]
 CORS_ALLOW_HEADERS = (
     'access-control-allow-credentials',
     'access-control-allow-origin',
