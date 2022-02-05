@@ -11,7 +11,7 @@ class UserManager(BaseUserManager):
 
     # create_user()의 기본형: create_user(*username_field*, password=None, **other_fields)
     # 본 프로젝트에서는 username_field에 'user_id'(사용자 아이디)를 사용
-    def create_user(self, userid, username, email, auth_num=None, password=None):
+    def create_user(self, userid, username, email, password=None):
         if not userid:
             raise ValueError('Users must have an user id')
         if not username:
@@ -23,7 +23,6 @@ class UserManager(BaseUserManager):
             userid=userid,
             username=username,
             email=self.normalize_email(email),
-            auth_num=auth_num,
             password=password    # 암호화 진행 시 삭제
         )
 
@@ -33,13 +32,12 @@ class UserManager(BaseUserManager):
 
     # create_superuser()의 기본형: create_superuser(*username_field*, password, **other_fields)
     # 위와 마찬가지로 username_field에 'user_id'(사용자 아이디)를 사용
-    def create_superuser(self, userid, username, email, password, auth_num=None):
+    def create_superuser(self, userid, username, email, password):
         user = self.create_user(
             userid,
             password=password,
             username=username,
             email=self.normalize_email(email),
-            auth_num=auth_num
         )
         user.is_admin = True
         user.save(using=self._db)
@@ -52,7 +50,6 @@ class User(AbstractBaseUser):
                               unique=True, verbose_name='사용자 아이디')
     username = models.CharField(max_length=50, null=False, blank=False, verbose_name='사용자 이름')
     email = models.EmailField(verbose_name='이메일', max_length=255, unique=True, null=False, blank=False)
-    auth_num = models.CharField(verbose_name='인증번호', max_length=8, null=True)
     # 아래 두 개의 필드는 Django의 User Model을 구성할 때 필수로 요구되는 항목
     is_active = models.BooleanField(default=True)  # 이메일 인증 시 활용되는 속성
     is_admin = models.BooleanField(default=False)
@@ -83,4 +80,16 @@ class User(AbstractBaseUser):
     # 실제 데이터베이스에서 보이는 테이블 이름 설정
     class Meta:
         db_table = 'users'
+
+
+class UserAuth(models.Model):
+    id = models.AutoField(primary_key=True)
+    email = models.EmailField(verbose_name='이메일', max_length=255, null=False, blank=False)
+    auth_num = models.CharField(verbose_name='인증번호', max_length=8, null=True)
+
+    def __str__(self):
+        return self.id
+
+    class Meta:
+        db_table = 'user_auths'
 
