@@ -25,22 +25,6 @@ def logout_main(request):
     return render(request, 'home.html')
 
 
-def duplicate_id_check(request):
-    if request.method == 'POST':
-        check_userid = request.POST.get('check_userid', None)  # 아이디
-        print(check_userid)
-        if User.objects.filter(userid=check_userid).exists():  # 아이디 중복 체크
-            print('이미 존재하는 아이디입니다.')
-            messages.warning(request, '이미 존재하는 아이디입니다!')
-            return render(request, 'common/duplicate_id_check.html')
-        else:
-            print('사용 가능한 아이디입니다.')
-            messages.warning(request, '사용 가능한 아이디입니다!')
-            return render(request, 'common/duplicate_id_check.html')
-    elif request.method == 'GET':
-        return render(request, 'common/duplicate_id_check.html')
-
-
 # ++++++++++++++++++++++++++ 아이디 입력 및 중복확인 ++++++++++++++++++++++++++
 class CheckID(View):
     def post(self, request):
@@ -154,10 +138,14 @@ class EmailAuth(View):
                      to=[email]).send()
 
         # 인증번호 전용 사용자 생성
-        user_auth = UserAuth.objects.create(
-            email=email,
-            auth_num=auth_num
-        )
+        if UserAuth.objects.filter(email=email):
+            user_auth = UserAuth.objects.get(email=email)
+            user_auth.auth_num = auth_num
+        else:
+            user_auth = UserAuth.objects.create(
+                email=email,
+                auth_num=auth_num
+            )
         user_auth.save()
         return JsonResponse({'message': "I sent the authentication number to the email you entered.\n"
                                         "Go to... '/common/signup/auth/email'",
@@ -192,36 +180,6 @@ class EmailAuthComplete(View):
 
     def get(self, request):
         return JsonResponse({'message': "Go to... '/common/signup/auth/email/comp'", 'status': 200}, status=200)
-
-
-# 인증번호 입력에 대한 처리
-class Auth(View):
-    def post(self, request):
-        # 1) 입력한 정보를 전달받음
-        # data = json.loads(request.body)
-        # auth_num = data['auth_num']
-        # userid = data['userid']
-        auth_num = request.POST['auth_num']
-        userid = request.POST['userid']
-
-        # 2) DB에 저장된 인증번호와 사용자의 입력을 비교
-        if User.objects.filter(userid=userid).exists():
-            user = User.objects.get(userid=userid)
-
-            # 두 auth_num을 비교... 같으면 회원가입 성공
-            if user.auth_num == auth_num:
-                user.auth_num = None
-                user.save()
-                return redirect('/common/signup/auth/email/comp')
-                # return JsonResponse({'message': "Go to... '/common/signup/auth/email/comp'", 'status': 200}, status=200)
-            # 다르면 사용자 정보 삭제 후 다시 회원가입 진행
-            else:
-                user.delete()
-                return render(request, 'common/signup.html')
-                # return JsonResponse({'message': "Go to... '/common/signup'", 'status': 200}, status=200)
-        else:
-            return render(request, 'common/signup.html')
-            # return JsonResponse({'message': "Go to... '/common/signup'", 'status': 200}, status=200)
 
 
 # 이메일 인증 페이지
