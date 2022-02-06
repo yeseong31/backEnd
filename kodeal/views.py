@@ -1,3 +1,5 @@
+import os
+
 from django.shortcuts import render
 from config import my_settings
 
@@ -25,18 +27,18 @@ def qna_main(request):
         user_text = request.POST['text_area']  # 질문 영역
         # codex 변환 과정
         response = openai.Completion.create(
-            engine="code-davinci-001",  # 원래는 davinci-codex
+            engine="text-davinci-001",
             prompt=user_text,
-            temperature=0,
-            max_tokens=128,
-            top_p=1.0,
-            frequency_penalty=0.0,
-            presence_penalty=0.0,
-            stop=["\"\"\""],
+            temperature=0.7,
+            max_tokens=64,
+            top_p=1,
+            frequency_penalty=0,
+            presence_penalty=0
         )
         return render(request, 'common/qna_answer.html', {'response': response})
     else:
         return render(request, 'common/qna_main.html')
+
 
 # common page
 def login_main(request):
