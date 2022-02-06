@@ -23,10 +23,10 @@ class UserManager(BaseUserManager):
             userid=userid,
             username=username,
             email=self.normalize_email(email),
-            password=password    # 암호화 진행 시 삭제
+            # password=password    # 암호화 진행 시 삭제
         )
 
-        # user.set_password(password)    # 암호화 진행 시 주석 해제
+        user.set_password(password)    # 암호화 진행 시 주석 해제
         user.save(using=self._db)
         return user
 

@@ -49,21 +49,19 @@ class SignupView(View):
         data = json.loads(request.body)
         username = data['username']  # 이름
         userid = data['userid']  # 아이디
-        password1 = data['password1']  # 비밀번호
-        password2 = data['password2']  # 비밀번호(확인)
+        password1 = data['password']  # 비밀번호
         email = data['email']  # 이메일
         # username = request.POST.get('username', None)  # 이름
         # userid = request.POST.get('userid', None)  # 아이디
-        # password1 = request.POST.get('password1', None)  # 비밀번호
-        # password2 = request.POST.get('password2', None)  # 비밀번호(확인)
+        # password1 = request.POST.get('password', None)  # 비밀번호
         # email = request.POST.get('email', None)  # 이메일
 
         # 입력하지 않은 칸 확인
-        if not (username and userid and password1 and password2 and email):
+        if not (username and userid and password1 and email):
             return JsonResponse({'message': "There's a space that I didn't enter.", 'status': 400}, status=400)
         # 비밀번호 비교
-        if password1 != password2:
-            return JsonResponse({'message': "The password doesn't match.", 'status': 400}, status=400)
+        # if password1 != password2:
+        #     return JsonResponse({'message': "The password doesn't match.", 'status': 400}, status=400)
 
         # 사용자 생성
         user = User.objects.create_user(
