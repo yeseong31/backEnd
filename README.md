@@ -8,16 +8,14 @@
 kodeal web page using django
 
 ## Built With
-<details> <summary> <b> Develop Stack   </b></summary>
-</br>
-
+<details> 
+  <summary> <b> Develop Stack   </b></summary>
+  </br>
 * ![Python](https://img.shields.io/badge/Python-3776AB.svg?style=flat-square&logo=Python&logoColor=white)
 * ![Django](https://img.shields.io/badge/Django-092E20.svg?style=flat-square&logo=Django&logoColor=white)
 * ![MariaDB](https://img.shields.io/badge/MariaDB-003545.svg?style=flat-square&logo=MariaDB&logoColor=white)
 * ![AWS EC2](https://img.shields.io/badge/-EC2-000000?style=flat-square&logo=amazon-aws&logoColor=white)  
-
 </details>
-</br>
 
 ## Tools
 * ![PyCharm](https://img.shields.io/badge/PyCharm-000000.svg?style=flat-square&logo=PyCharm&logoColor=white) 
@@ -32,4 +30,4 @@ kodeal web page using django
 * [yeseong31](https://github.com/yeseong31) <br>
 
 ## 📫 Contacts
-![Gmail Badge](https://img.shields.io/badge/Gmail-d14836?style=flat-square&logo=Gmail&logoColor=white&link=mailto:kodealtest@gmail.com)(mailto:kodealtest@gmail.com)
+[![Gmail Badge](https://img.shields.io/badge/Gmail-d14836?style=flat-square&logo=Gmail&logoColor=white&link=mailto:kodealtest@gmail.com)](mailto:kodealtest@gmail.com)
