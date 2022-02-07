@@ -20,8 +20,9 @@ kodeal web page using django
 </details>
 
 ## Tools
-* ![PyCharm](https://img.shields.io/badge/PyCharm-000000.svg?style=flat-square&logo=PyCharm&logoColor=white) 
+* ![PyCharm Badge](https://img.shields.io/badge/PyCharm-000000.svg?style=flat-square&logo=PyCharm&logoColor=white) 
 * ![Trello Badge](https://img.shields.io/badge/Trello-0052cc?style=flat-square&logo=Trello&logoColor=white&link=https://trello.com/b/mrg8i2EQ/roadmap)
+* ![Slack Badge](https://img.shields.io/badge/Slack-4a154b.svg?style=flat-square&logo=Slack&logoColor=white) 
 
 ## Basic Layout
 ![image](https://user-images.githubusercontent.com/66625672/147870771-0853ea7c-57bd-48f9-b2a1-71ee739e7e36.png)
