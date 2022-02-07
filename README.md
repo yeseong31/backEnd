@@ -21,6 +21,7 @@ kodeal web page using django
 
 ## Tools
 ![PyCharm](https://img.shields.io/badge/PyCharm-000000.svg?style=flat-square&logo=PyCharm&logoColor=white) 
+![Trello Badge](https://img.shields.io/badge/Trello-0052cc?style=flat-square&logo=Trello&logoColor=white&link=https://trello.com/b/mrg8i2EQ/roadmap)
 
 ## Basic Layout
 ![image](https://user-images.githubusercontent.com/66625672/147870771-0853ea7c-57bd-48f9-b2a1-71ee739e7e36.png)
@@ -30,5 +31,3 @@ kodeal web page using django
 * [Min](https://github.com/Proals) <br>
 * [yeseong31](https://github.com/yeseong31) <br>
 
-## 📫 Contacts
-[![Trello Badge](https://img.shields.io/badge/Trello-0052cc?style=flat-square&logo=Trello&logoColor=white&link=https://trello.com/b/mrg8i2EQ/roadmap)]
