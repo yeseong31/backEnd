@@ -49,7 +49,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
 
     # blog
-    'blog',
+    'blog.apps.BlogConfig',
     'rest_framework',
 
     # cors
