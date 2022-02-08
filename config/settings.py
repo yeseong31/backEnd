@@ -31,6 +31,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+     # cors
+    'corsheaders',
     'common.apps.CommonConfig',  # 로그인 기능을 위함
     'django.contrib.sites',  # 웹 앱(kodeal)과 django-allauth를 연결
     'django.contrib.admin',
@@ -52,8 +54,6 @@ INSTALLED_APPS = [
     'blog.apps.BlogConfig',
     'rest_framework',
 
-    # cors
-    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -165,6 +165,13 @@ CSRF_TRUSTED_ORIGINS = (
     'localhost:8000',
     '127.0.0.1:8000',
 )
+CORS_ALLOW_METHODS = (
+    'DELETE',
+    'GET',
+    'POST',
+    'PUT',
+)
+
 CORS_ALLOW_HEADERS = (
     'access-control-allow-credentials',
     'access-control-allow-origin',
