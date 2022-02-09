@@ -100,7 +100,11 @@ class LoginView(View):
                     # 로그인 완료
                     auth.login(request, user, backend='django.contrib.auth.backends.ModelBackend')
                     # return redirect('/')
-                    return JsonResponse({'message': "Go to... '/home'", 'status': 200}, status=200)
+                    return JsonResponse({'message': "Go to... '/home'",
+                                         'userid': user.userid,
+                                         'username': user.username,
+                                         'email': user.email,
+                                         'status': 200}, status=200)
                 # 그렇지 않다면 400 Error
                 return JsonResponse({'message': "Enter invalid authentication information", 'status': 401}, status=401)
             else:
