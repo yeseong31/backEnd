@@ -17,9 +17,12 @@ def index(request):
     return render(request, 'home.html')
 
 
-# 일반 로그아웃
+# 로그아웃... 0211 쿠키 적용
 def logout_main(request):
     if request.method == 'POST':
+        response = render(request, 'home.html')
+        response.delete_cookie('userid')
+        response.delete_cookie('password')
         auth.logout(request)
         return redirect('/')
     return render(request, 'home.html')
@@ -39,6 +42,38 @@ class CheckID(View):
 
     def get(self, request):
         return JsonResponse({'message': "Go to... '/common/signup/check/id'", 'status': 200}, status=200)
+
+
+# ++++++++++++++++++++++++++ 쿠키 기능을 포함한 로그인(HTML ver) ++++++++++++++++++++++++++
+def login_with_cookie(request):
+    # 해당 cookie에 값이 없으면 return None
+    if request.COOKIES.get('userid') is not None:
+        userid = request.COOKIES.get('userid')
+        password = request.COOKIES.get('password')
+        user = auth.authenticate(request, userid=userid, password=password)
+        if user is not None:
+            auth.login(request, user)
+            return redirect('/')
+        else:
+            return render(request, 'common/login.html')
+    elif request.method == 'POST':
+        userid = request.POST['userid']
+        password = request.POST['password']
+        # 해당 user가 있으면 userid, 없으면 None
+        user = auth.authenticate(request, userid=userid, password=password)
+        if user is not None:
+            auth.login(request, user)
+            if request.POST.get('keep_login'):
+                response = render(request, 'kodeal/index.html')
+                response.set_cookie('userid', userid)
+                response.set_cookie('password', password)
+                return response
+            return redirect('/')
+        else:
+            return render(request, 'common/login.html', {'error': 'username or password is incorrect}'})
+    elif request.method == 'GET':
+        return render(request, 'common/login.html')
+    return render(request, 'common/login.html')
 
 
 # ++++++++++++++++++++++++++ JSON으로 회원가입/로그인 ++++++++++++++++++++++++++
