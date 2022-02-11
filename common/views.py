@@ -1,10 +1,8 @@
 import json
-import re
 
 from django.contrib import auth
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
-from django.contrib import messages
 from django.views import View
 
 from .mail import email_auth_num
@@ -134,7 +132,6 @@ class LoginView(View):
                 if user.check_password(password):
                     # 로그인 완료
                     auth.login(request, user, backend='django.contrib.auth.backends.ModelBackend')
-                    # return redirect('/')
                     return JsonResponse({'message': "Go to... '/home'",
                                          'userid': user.userid,
                                          'username': user.username,
@@ -170,8 +167,8 @@ class EmailAuth(View):
 
         # 유효한 이메일이라면 인증번호 발송
         auth_num = email_auth_num()
-        EmailMessage(subject='이메일 인증 코드입니다.',
-                     body=f'아래의 코드를 입력하세요!!\n\n{auth_num}',
+        EmailMessage(subject='이메일 인증 코드 전송!',
+                     body=f'8자리 코드: {auth_num}',
                      to=[email]).send()
 
         # 인증번호 전용 사용자 생성
