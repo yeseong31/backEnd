@@ -94,7 +94,7 @@ class SignupView(View):
         # 입력하지 않은 칸 확인
         if not (username and userid and password1 and email):
             return JsonResponse({'message': "There's a space that I didn't enter.", 'status': 400}, status=400)
-        # 비밀번호 비교
+        # 비밀번호 비교...는 프론트엔드에서 하기로
         # if password1 != password2:
         #     return JsonResponse({'message': "The password doesn't match.", 'status': 400}, status=400)
 
@@ -131,7 +131,7 @@ class LoginView(View):
             if User.objects.filter(userid=userid).exists():
                 user = User.objects.get(userid=userid)
                 # 입력한 비밀번호가 사용자의 비밀번호와 일치한다면
-                if user.password == password:
+                if user.check_password(password):
                     # 로그인 완료
                     auth.login(request, user, backend='django.contrib.auth.backends.ModelBackend')
                     # return redirect('/')
