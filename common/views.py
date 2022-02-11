@@ -17,9 +17,12 @@ def index(request):
     return render(request, 'home.html')
 
 
-# 일반 로그아웃
+# 로그아웃... 0211 쿠키 적용
 def logout_main(request):
     if request.method == 'POST':
+        response = render(request, 'home.html')
+        response.delete_cookie('userid')
+        response.delete_cookie('password')
         auth.logout(request)
         return redirect('/')
     return render(request, 'home.html')
@@ -41,6 +44,38 @@ class CheckID(View):
         return JsonResponse({'message': "Go to... '/common/signup/check/id'", 'status': 200}, status=200)
 
 
+# ++++++++++++++++++++++++++ 쿠키 기능을 포함한 로그인(HTML ver) ++++++++++++++++++++++++++
+def login_with_cookie(request):
+    # 해당 cookie에 값이 없으면 return None
+    if request.COOKIES.get('userid') is not None:
+        userid = request.COOKIES.get('userid')
+        password = request.COOKIES.get('password')
+        user = auth.authenticate(request, userid=userid, password=password)
+        if user is not None:
+            auth.login(request, user)
+            return redirect('/')
+        else:
+            return render(request, 'common/login.html')
+    elif request.method == 'POST':
+        userid = request.POST['userid']
+        password = request.POST['password']
+        # 해당 user가 있으면 userid, 없으면 None
+        user = auth.authenticate(request, userid=userid, password=password)
+        if user is not None:
+            auth.login(request, user)
+            if request.POST.get('keep_login'):
+                response = render(request, 'kodeal/index.html')
+                response.set_cookie('userid', userid)
+                response.set_cookie('password', password)
+                return response
+            return redirect('/')
+        else:
+            return render(request, 'common/login.html', {'error': 'username or password is incorrect}'})
+    elif request.method == 'GET':
+        return render(request, 'common/login.html')
+    return render(request, 'common/login.html')
+
+
 # ++++++++++++++++++++++++++ JSON으로 회원가입/로그인 ++++++++++++++++++++++++++
 # 회원가입
 class SignupView(View):
@@ -59,7 +94,7 @@ class SignupView(View):
         # 입력하지 않은 칸 확인
         if not (username and userid and password1 and email):
             return JsonResponse({'message': "There's a space that I didn't enter.", 'status': 400}, status=400)
-        # 비밀번호 비교
+        # 비밀번호 비교...는 프론트엔드에서 하기로
         # if password1 != password2:
         #     return JsonResponse({'message': "The password doesn't match.", 'status': 400}, status=400)
 
@@ -96,7 +131,7 @@ class LoginView(View):
             if User.objects.filter(userid=userid).exists():
                 user = User.objects.get(userid=userid)
                 # 입력한 비밀번호가 사용자의 비밀번호와 일치한다면
-                if user.password == password:
+                if user.check_password(password):
                     # 로그인 완료
                     auth.login(request, user, backend='django.contrib.auth.backends.ModelBackend')
                     # return redirect('/')
