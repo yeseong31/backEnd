@@ -33,4 +33,4 @@ kodeal web page using django
 * [yeseong31](https://github.com/yeseong31) <br>
 
 ## 📫 Contacts
-[![Gmail Badge](https://img.shields.io/badge/Gmail-d14836?style=flat-square&logo=kodealtest@gmail.com&logoColor=white&link=mailto:kodealtest@gmail.com)](mailto:kodealtest@gmail.com)
+[![Gmail Badge](https://img.shields.io/badge/Gmail-d14836?style=flat-square&logo=Gmail&logoColor=white&link=mailto:kodealtest@gmail.com)](mailto:kodealtest@gmail.com)
