@@ -23,9 +23,9 @@ openai.Engine.list()                                # 2.12 추가.
 class IndexView(View):
     def get(self, request):
         # 로그인 한 사용자인지 확인
-        data = json.loads(request.body)
-        userid = data['userid']
-        # userid = request.GET.get('userid')
+        # data = json.loads(request.body)
+        # userid = data['userid']
+        userid = request.GET.get('userid')
 
         if Login_User.objects.filter(userid=userid).exists():
             user = Login_User.objects.get(userid=userid)
