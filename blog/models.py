@@ -7,12 +7,11 @@ DELETED_USER = "deleted_user"
 
 
 class User(models.Model):
-    question = models.CharField(max_length=32)
-    code = models.CharField(max_length=254)
+    question = models.CharField(max_length=32, verbose_name='질문')
+    code = models.CharField(max_length=500, verbose_name='코드')
     time = models.DateTimeField(verbose_name='작성일', help_text="time", auto_now_add=True)
     userid = models.ForeignKey(Login_user, related_name="%(class)s_userid", on_delete=models.SET_DEFAULT,
-                               default=DELETED_USER,
-                               db_column='userid', verbose_name='사용자 아이디')
+                               default=DELETED_USER, db_column='userid', verbose_name='사용자 아이디')
 
 
 class Entry(models.Model):
