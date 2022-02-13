@@ -1,5 +1,6 @@
 import os
 
+from django.http import JsonResponse
 from django.shortcuts import render
 from config import my_settings
 
@@ -44,3 +45,17 @@ def qna_main(request):
 def login_main(request):
     return render(request, 'common/login_main.html')
 
+
+# blog의 question을 전달 받아 codex 답변을 return 해주는 함수
+def question_to_answer(question):
+    # codex 변환 과정
+    response = openai.Completion.create(
+        engine="text-davinci-001",
+        prompt=question,
+        temperature=0.7,
+        max_tokens=64,
+        top_p=1,
+        frequency_penalty=0,
+        presence_penalty=0
+    )
+    return response
