@@ -7,39 +7,69 @@ from django.core.serializers import serialize
 import django_filters
 from rest_framework import viewsets, filters
 
+from kodeal.views import question_to_answer
 from .models import User, Entry
+from common.models import User as Login_User
 from .serializer import UserSerializer, EntrySerializer
+
+from config import my_settings                        # 2.12 추가
+from django.db.models import Max                    # 2.12 추가
+import openai                                       # 2.12 추가
+
+openai.api_key = my_settings.OPENAI_CODEX_KEY       # 2.12 추가
+openai.Engine.list()                                # 2.12 추가.
 
 
 class IndexView(View):
-
     def get(self, request):
-        friends = User.objects.all().order_by('-id')
-        data = json.loads(serialize('json', friends))
-        return JsonResponse({'items': data})
+        # 로그인 한 사용자인지 확인
+        # data = json.loads(request.body)
+        # userid = data['userid']
+        userid = request.GET.get('userid')
+
+        if Login_User.objects.filter(userid=userid).exists():
+            user = Login_User.objects.get(userid=userid)
+
+            # 해당 userid에 대한 '질문 목록'을 넘겨줘야 함
+            questions = User.objects.filter(userid=user).order_by('-time')
+            data = json.loads(serialize('json', questions))
+            return JsonResponse({'items': data, 'status': 200}, status=200)
+
+        # 만약 서비스 이용자가 아니라면 400 error
+        else:
+            return JsonResponse({'message': 'The user id does not exist.', 'status': 400}, status=400)
 
     def post(self, request):
-        if request.META['CONTENT_TYPE'] == "application/json":
-            request = json.loads(request.body)
-            friend = User(question=request['question'],
-                          code=request['code'],
-                          time=request['time'],)
+        request = json.loads(request.body)
+
+        question = request['question']
+        userid = request['userid']
+
+        # 전달받은 아이디가 DB에 있으면
+        if Login_User.objects.filter(userid=userid).exists():
+            user = Login_User.objects.get(userid=userid)
+
+            tmp = question_to_answer(question)
+            answer = str(tmp['choices'][0]['text'])
+
+            friend = User(question=question,
+                          code=answer,
+                          userid=user)
+            friend.save()
+
+            return JsonResponse({'answer': answer, 'status': 200}, status=200)
+        # 전달받은 아이디가 DB에 없으면 400 에러
         else:
-            friend = User(question=request.POST['question'],
-                          code=request.POST['code'],
-                          time=request.POST['time'],)
-        friend.save()
-        return HttpResponse(status=200)
+            return JsonResponse({'message': 'The user id does not exist.', 'status': 400}, status=400)
 
     def put(self, request):
         request = json.loads(request.body)
         id = request['id']
         question = request['question']
         code = request['code']
-        time = request['time']
+
         friend = get_object_or_404(User, pk=id)
         friend.question = question
-        friend.time = time
         friend.code = code
         friend.save()
         return HttpResponse(status=200)
