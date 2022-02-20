@@ -44,7 +44,7 @@ class IndexView(View):
         question = request['question']
         userid = request['userid']
 
-        # 전달받은 아이디가 DB에 있으면
+        # 전달 받은 아이디가 DB에 있으면
         if Login_User.objects.filter(userid=userid).exists():
             user = Login_User.objects.get(userid=userid)
 
