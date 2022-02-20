@@ -1,7 +1,10 @@
+import ctypes
 import os
 
 from django.http import JsonResponse
 from django.shortcuts import render
+
+from common.models import User
 from config import my_settings
 
 import openai
@@ -38,12 +41,10 @@ def qna_main(request):
         )
         return render(request, 'common/qna_answer.html', {'response': response})
     else:
+        # 로그인 한 상태라면...
+        # user = User.objects.get(userid=request.session.get('userid_session', False))
+        # ctypes.windll.user32.MessageBoxW(0, f'지금 로그인 중인 사용자: {user.userid}', '로그인 확인 창          ')
         return render(request, 'common/qna_main.html')
-
-
-# common page
-def login_main(request):
-    return render(request, 'common/login_main.html')
 
 
 # blog의 question을 전달 받아 codex 답변을 return 해주는 함수

@@ -1,3 +1,4 @@
+import ctypes
 import json
 
 from django.contrib import auth
@@ -5,6 +6,7 @@ from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
 from django.views import View
 
+from config.settings import MINUTE
 from .mail import email_auth_num
 
 from common.models import User, UserAuth
@@ -18,11 +20,13 @@ def index(request):
 # 로그아웃... 0211 쿠키 적용
 def logout_main(request):
     if request.method == 'POST':
-        response = render(request, 'home.html')
+        # response = render(request, 'home.html')
+        response = JsonResponse({'message': "LOGOUT COMPLETE! Go to... '/home'", 'status': 200}, status=200)
         response.delete_cookie('userid')
-        response.delete_cookie('password')
+        response.delete_cookie('username')
         auth.logout(request)
-        return redirect('/')
+        # return redirect('/')
+        return response
     return render(request, 'home.html')
 
 
@@ -118,11 +122,21 @@ class SignupView(View):
 # 로그인
 class LoginView(View):
     def post(self, request):
-        data = json.loads(request.body)
-        userid = data['userid']
-        password = data['password']
-        # userid = request.POST['userid']
-        # password = request.POST['password']
+        # data = json.loads(request.body)
+        # userid = data['userid']
+        # password = data['password']
+        # keep_login = data['keep_login']
+        userid = request.POST['userid']
+        password = request.POST['password']
+        keep_login = request.POST['keep_login']
+
+        # 사용자가 로그인 화면에서 뒤로가기를 포함한 동작을 수행하면 강제 로그아웃
+        if request.COOKIES.get('userid') is not None:
+            response = JsonResponse({'message': "Go to... '/login'", 'status': 200}, status=200)
+            response.delete_cookie('userid')
+            response.delete_cookie('password')
+            auth.logout(request)
+            return response
 
         try:
             # 해당 아이디의 사용자가 존재한다면
@@ -132,11 +146,17 @@ class LoginView(View):
                 if user.check_password(password):
                     # 로그인 완료
                     auth.login(request, user, backend='django.contrib.auth.backends.ModelBackend')
-                    return JsonResponse({'message': "Go to... '/home'",
-                                         'userid': user.userid,
-                                         'username': user.username,
-                                         'email': user.email,
-                                         'status': 200}, status=200)
+                    response = JsonResponse({'message': "Go to... '/home'",
+                                             'userid': userid,
+                                             'username': user.username,
+                                             'email': user.email,
+                                             'status': 200}, status=200)
+                    # 로그인 상태 유지하기
+                    if keep_login == 'True':
+                        response.set_cookie('userid', userid, max_age=MINUTE*60)
+                        response.set_cookie('username', user.username, max_age=MINUTE*60)
+                    return response
+
                 # 그렇지 않다면 400 Error
                 return JsonResponse({'message': "Enter invalid authentication information", 'status': 401}, status=401)
             else:
@@ -145,8 +165,8 @@ class LoginView(View):
             return JsonResponse({'message': 'INVALID_KEYS', 'status': 400}, status=400)
 
     def get(self, request):
-        # return render(request, 'common/login.html')
-        return JsonResponse({'message': "Go to... '/login'", 'status': 200}, status=200)
+        return render(request, 'common/login.html')
+        # return JsonResponse({'message': "Go to... '/login'", 'status': 200}, status=200)
 
 
 # ++++++++++++++++++++++++++ 이메일 인증 확인 ++++++++++++++++++++++++++

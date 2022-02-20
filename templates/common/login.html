@@ -19,6 +19,8 @@
             <input type="password" name="password" id="password"
                    value="{{ form.password.value|default_if_none:'' }}">
         </div>
+        <input type="text" name="keep_login" id="keep_login"
+                   value="True" hidden>
         <button type="submit"> 로그인 </button>
     </form>
     <a href="{% provider_login_url 'google' %}">Google 로그인</a>
