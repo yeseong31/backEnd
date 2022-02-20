@@ -200,3 +200,7 @@ CORS_ALLOW_HEADERS = (
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Cookie 만료 시점 설정
+MINUTE = 60
+SESSION_COOKIE_AGE = MINUTE * 60		# 쿠키의 유효 기간 설정 (default: 2주)
+# SESSION_SAVE_EVERY_REQUEST = True   # 서버에게 Request를 보내면 시간 초기화
