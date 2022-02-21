@@ -5,7 +5,7 @@
 # kodeal backEnd
 2022 컴퓨터공학부 종합설계 백엔드
 
-kodeal web page using django
+kodeal web page using django<br/>
 <b>This Project service is to teach python language for coding beginner</b>
 
 ## Built With
