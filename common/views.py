@@ -151,10 +151,10 @@ class LoginView(View):
                                              'username': user.username,
                                              'email': user.email,
                                              'status': 200}, status=200)
-                    # 로그인 상태 유지하기
+                    # 로그인 상태 유지하기(Cookie)
                     if keep_login == 'True':
                         response.set_cookie('userid', userid, max_age=MINUTE*60)
-                        response.set_cookie('username', user.username, max_age=MINUTE*60)
+                        response.set_cookie('username', user.username.encode('utf-8'), max_age=MINUTE*60)
                     return response
 
                 # 그렇지 않다면 400 Error

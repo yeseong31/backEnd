@@ -166,11 +166,12 @@ CORS_ALLOW_CREDENTIALS = True   # 쿠키가 cross-site HTTP 요청에 포함될 
 CSRF_TRUSTED_ORIGINS = (
     'localhost:8000',
     '127.0.0.1:8000',
-    'https://main.d1nielb0ge84b3.amplifyapp.com/',
+    # 'https://main.d1nielb0ge84b3.amplifyapp.com/',
 )
 CORS_ORIGIN_WHITELIST = ['http://127.0.0.1:8000',
                          'http://localhost:8000',
-                         'https://main.d1nielb0ge84b3.amplifyapp.com/',]
+                         # 'https://main.d1nielb0ge84b3.amplifyapp.com/',
+                         ]
 
 CORS_ALLOW_METHODS = (
     'DELETE',
