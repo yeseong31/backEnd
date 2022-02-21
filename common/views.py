@@ -46,38 +46,6 @@ class CheckID(View):
         return JsonResponse({'message': "Go to... '/common/signup/check/id'", 'status': 200}, status=200)
 
 
-# ++++++++++++++++++++++++++ 쿠키 기능을 포함한 로그인(HTML ver) ++++++++++++++++++++++++++
-def login_with_cookie(request):
-    # 해당 cookie에 값이 없으면 return None
-    if request.COOKIES.get('userid') is not None:
-        userid = request.COOKIES.get('userid')
-        password = request.COOKIES.get('password')
-        user = auth.authenticate(request, userid=userid, password=password)
-        if user is not None:
-            auth.login(request, user)
-            return redirect('/')
-        else:
-            return render(request, 'common/login.html')
-    elif request.method == 'POST':
-        userid = request.POST['userid']
-        password = request.POST['password']
-        # 해당 user가 있으면 userid, 없으면 None
-        user = auth.authenticate(request, userid=userid, password=password)
-        if user is not None:
-            auth.login(request, user)
-            if request.POST.get('keep_login'):
-                response = render(request, 'kodeal/index.html')
-                response.set_cookie('userid', userid)
-                response.set_cookie('password', password)
-                return response
-            return redirect('/')
-        else:
-            return render(request, 'common/login.html', {'error': 'username or password is incorrect}'})
-    elif request.method == 'GET':
-        return render(request, 'common/login.html')
-    return render(request, 'common/login.html')
-
-
 # ++++++++++++++++++++++++++ JSON으로 회원가입/로그인 ++++++++++++++++++++++++++
 # 회원가입
 class SignupView(View):
@@ -122,19 +90,19 @@ class SignupView(View):
 # 로그인
 class LoginView(View):
     def post(self, request):
-        # data = json.loads(request.body)
-        # userid = data['userid']
-        # password = data['password']
-        # keep_login = data['keep_login']
-        userid = request.POST['userid']
-        password = request.POST['password']
-        keep_login = request.POST['keep_login']
+        data = json.loads(request.body)
+        userid = data['userid']
+        password = data['password']
+        keep_login = data['keep_login']
+        # userid = request.POST['userid']
+        # password = request.POST['password']
+        # keep_login = request.POST['keep_login']
 
         # 사용자가 로그인 화면에서 뒤로가기를 포함한 동작을 수행하면 강제 로그아웃
         if request.COOKIES.get('userid') is not None:
             response = JsonResponse({'message': "Go to... '/login'", 'status': 200}, status=200)
             response.delete_cookie('userid')
-            response.delete_cookie('password')
+            response.delete_cookie('username')
             auth.logout(request)
             return response
 
@@ -165,8 +133,8 @@ class LoginView(View):
             return JsonResponse({'message': 'INVALID_KEYS', 'status': 400}, status=400)
 
     def get(self, request):
-        return render(request, 'common/login.html')
-        # return JsonResponse({'message': "Go to... '/login'", 'status': 200}, status=200)
+        # return render(request, 'common/login.html')
+        return JsonResponse({'message': "Go to... '/login'", 'status': 200}, status=200)
 
 
 # ++++++++++++++++++++++++++ 이메일 인증 확인 ++++++++++++++++++++++++++
