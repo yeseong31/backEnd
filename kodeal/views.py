@@ -29,16 +29,8 @@ def qna_main(request):
     if request.method == 'POST':
         user_code = request.POST['code_area']  # 코드 영역
         user_text = request.POST['text_area']  # 질문 영역
-        # codex 변환 과정
-        response = openai.Completion.create(
-            engine="text-davinci-001",
-            prompt=user_text,
-            temperature=0.7,
-            max_tokens=64,
-            top_p=1,
-            frequency_penalty=0,
-            presence_penalty=0
-        )
+
+        response = question_to_answer(user_text)
         return render(request, 'common/qna_answer.html', {'response': response})
     else:
         # 로그인 한 상태라면...
