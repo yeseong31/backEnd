@@ -171,7 +171,7 @@ ENV/
 
 # privacy infomation
 my_settings.py
-kodeal_cert.cert
-kodeal_ssl.key
+kodeal.crt
+kodeal.key
 
 # End of https://www.gitignore.io/api/macos,linux,django,python,pycharm
