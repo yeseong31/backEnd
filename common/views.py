@@ -1,4 +1,3 @@
-import ctypes
 import json
 
 from django.contrib import auth
@@ -206,17 +205,17 @@ class EmailAuthComplete(View):
 
 # 이메일 인증 페이지
 def auth_email(request):
-    return render(request, 'common/auth_email.html')
-    # return JsonResponse({'message': "Go to... '/common/auth/email'", 'status': 200}, status=200)
+    # return render(request, 'common/auth_email.html')
+    return JsonResponse({'message': "Go to... '/common/auth/email'", 'status': 200}, status=200)
 
 
 # 이메일 인증 완료 페이지
 def auth_email_complete(request):
-    return render(request, 'common/auth_email_complete.html')
-    # return JsonResponse({'message': "signup complete.", 'status': 200}, status=200)
+    # return render(request, 'common/auth_email_complete.html')
+    return JsonResponse({'message': "signup complete.", 'status': 200}, status=200)
 
 
 # 회원가입 완료 페이지
 def signup_complete(request):
-    return render(request, 'common/signup_complete.html')
-    # return JsonResponse({'message': "signup complete.", 'status': 200}, status=200)
+    # return render(request, 'common/signup_complete.html')
+    return JsonResponse({'message': "signup complete.", 'status': 200}, status=200)
