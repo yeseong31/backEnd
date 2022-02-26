@@ -23,7 +23,7 @@ https://main.d1nielb0ge84b3.amplifyapp.com/
 ## 🔧 Tools
 * ![PyCharm Badge](https://img.shields.io/badge/PyCharm-000000.svg?style=flat-square&logo=PyCharm&logoColor=white) 
 * [![Trello Badge](https://img.shields.io/badge/Trello-0052cc?style=flat-square&logo=Trello&logoColor=white&link=https://trello.com/b/mrg8i2EQ/roadmap/)](https://trello.com/b/mrg8i2EQ/roadmap/)
-* [![Slack Badge](https://img.shields.io/badge/Slack-4a154b.svg?style=flat-square&logo=Slack&logoColor=white&link=https://w1627955690-ob9739492.slack.com/ssb/redirect)]
+* [![Slack Badge](https://img.shields.io/badge/Slack-4a154b.svg?style=flat-square&logo=Slack&logoColor=white&link=https://w1627955690-ob9739492.slack.com/ssb/redirect)](https://w1627955690-ob9739492.slack.com/ssb/redirect)
 
 ## 🖋️ Basic Layout
 ![image](https://user-images.githubusercontent.com/66625672/147870771-0853ea7c-57bd-48f9-b2a1-71ee739e7e36.png)
