@@ -140,8 +140,10 @@ class LoginView(View):
 # ++++++++++++++++++++++++++ 이메일 인증 확인 ++++++++++++++++++++++++++
 class EmailAuth(View):
     def post(self, request):
-        data = json.loads(request.body)
-        email = data['email']
+        # data = json.loads(request.body)
+        # email = data['email']
+        email = request.POST['email']
+
         # 이메일이 유효하지 않은 형태라면
         # regex = re.compile("^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+[.][a-zA-Z0-9-.]+$")
 
@@ -194,7 +196,7 @@ class EmailAuthComplete(View):
                 return JsonResponse({'message': "Go to... '/common/signup/auth/email/comp'", 'status': 200}, status=200)
             # 두 auth_num이 다르다면 사용자가 잘못 입력했음을 알려줌
             else:
-                return JsonResponse({'message': 'This authentication number is not valid', 'status': 400}, status=400)
+                return JsonResponse({'message': 'This authentication number is not valid', 'status': 401}, status=401)
         # DB에 해당 이메일이 저장되어 있지 않으면 회원가입 페이지에서 이메일을 다시 입력하게끔 조치
         else:
             return JsonResponse({'message': "This email is not valid\n"
