@@ -8,6 +8,9 @@
 kodeal web page using django<br/>
 <b>This Project service is to teach python language for coding beginner</b>
 
+## Home Page
+https://main.d1nielb0ge84b3.amplifyapp.com/
+
 ## Built With
 <details> 
   <summary> <b> Develop Stack   </b></summary>
@@ -37,4 +40,4 @@ kodeal web page using django<br/>
 * [yeseong31](https://github.com/yeseong31) <br>
 
 ## 📫 Contacts
-[![Gmail Badge](https://img.shields.io/badge/Gmail-d14836?style=flat-square&logo=Gmail&logoColor=white&link=mailto:kodealtest@gmail.com)](mailto:kodealtest@gmail.com)
+[![kodealtest@gmail.com](https://img.shields.io/badge/Gmail-d14836?style=flat-square&logo=Gmail&logoColor=white&link=mailto:kodealtest@gmail.com)](mailto:kodealtest@gmail.com)
