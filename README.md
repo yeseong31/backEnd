@@ -3,7 +3,7 @@
 ![MariaDB: Version](https://img.shields.io/badge/MariaDB-10.3.32-blue)
 
 # kodeal backEnd
-2022 컴퓨터공학부 종합설계 백엔드
+## 2022 컴퓨터공학부 종합설계 백엔드
 
 kodeal web page using django<br/>
 <b>This Project service is to teach python language for coding beginner</b>
@@ -27,6 +27,9 @@ kodeal web page using django<br/>
 
 ## Basic Layout
 ![image](https://user-images.githubusercontent.com/66625672/147870771-0853ea7c-57bd-48f9-b2a1-71ee739e7e36.png)
+
+## Database
+<img width="880" alt="image" src="https://user-images.githubusercontent.com/66625672/155727540-cd3a03b9-b959-4bb5-9601-92127200b75c.png">
 
 ## Contributor
 * [jongseok Kwon](https://github.com/himJJong) <br>

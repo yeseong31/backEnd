@@ -28,7 +28,7 @@ def qna_answer(request):
 def qna_main(request):
     if request.method == 'POST':
         user_code = request.POST['code_area']  # 코드 영역
-        user_text = request.POST['text_area']  # 질문 영역
+        user_text = request.POST['text_area'] + " with python code" # 질문 영역
 
         response = question_to_answer(user_text)
         return render(request, 'common/qna_answer.html', {'response': response})
