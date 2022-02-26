@@ -9,6 +9,7 @@ kodeal web page using django<br/>
 <b>This Project service is to teach python language for coding beginner</b>
 
 ## 🏠 Home Page
+<img width="1280" alt="image" src="https://user-images.githubusercontent.com/66625672/155848647-4f63609e-8ed2-4e59-9dd6-77ef10ba631e.png">
 https://main.d1nielb0ge84b3.amplifyapp.com/
 
 ## 🛠️ Built With
