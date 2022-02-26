@@ -26,7 +26,9 @@ def logout_main(request):
         auth.logout(request)
         # return redirect('/')
         return response
-    return render(request, 'home.html')
+    elif request.method == 'GET':
+        return JsonResponse({'message': "Go to... '/home/'", 'status': 200}, status=200)
+        # return render(request, 'home.html')
 
 
 # ++++++++++++++++++++++++++ 아이디 입력 및 중복확인 ++++++++++++++++++++++++++
@@ -139,9 +141,9 @@ class LoginView(View):
 # ++++++++++++++++++++++++++ 이메일 인증 확인 ++++++++++++++++++++++++++
 class EmailAuth(View):
     def post(self, request):
-        # data = json.loads(request.body)
-        # email = data['email']
-        email = request.POST['email']
+        data = json.loads(request.body)
+        email = data['email']
+        # email = request.POST['email']
 
         # 이메일이 유효하지 않은 형태라면
         # regex = re.compile("^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+[.][a-zA-Z0-9-.]+$")
