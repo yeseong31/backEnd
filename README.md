@@ -12,10 +12,6 @@ kodeal web page using django<br/>
 https://main.d1nielb0ge84b3.amplifyapp.com/
 
 ## 🛠️ Built With
-<details> 
-  <summary> <b> Develop Stack   </b></summary>
-  <br/>
-  
 * ![Python](https://img.shields.io/badge/Python-3776AB.svg?style=flat-square&logo=Python&logoColor=white)
 * ![Django](https://img.shields.io/badge/Django-092E20.svg?style=flat-square&logo=Django&logoColor=white)
 * ![MariaDB](https://img.shields.io/badge/MariaDB-003545.svg?style=flat-square&logo=MariaDB&logoColor=white)
