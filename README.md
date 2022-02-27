@@ -18,7 +18,7 @@ https://main.d1nielb0ge84b3.amplifyapp.com/
 * ![MariaDB](https://img.shields.io/badge/MariaDB-003545.svg?style=flat-square&logo=MariaDB&logoColor=white)
 * ![OpenAI](https://img.shields.io/badge/OpenAI-412991.svg?style=flat-square&logo=OpenAI&logoColor=white)
 * ![OpenSSL](https://img.shields.io/badge/OpenSSL-721412.svg?style=flat-square&logo=OpenSSL&logoColor=white)
-* ![Microsoft Azure](https://img.shields.io/badge/MicrosoftAzure-0078D4?style=flat-square&logo=Microsoft-azure&logoColor=white)  
+* ![Microsoft Azure](https://img.shields.io/badge/Microsoft_Azure-0078D4?style=flat-square&logo=Microsoft-azure&logoColor=white)  
   
 </details>
 
@@ -39,4 +39,4 @@ https://main.d1nielb0ge84b3.amplifyapp.com/
 * [yeseong31](https://github.com/yeseong31) <br>
 
 ## 📫 Contacts
-* [![Gmail Badge](https://img.shields.io/badge/Gmail-d14836?style=flat-square&logo=Gmail&logoColor=white&link=mailto:kodealtest@gmail.com)](mailto:kodealtest@gmail.com)
+* [![Gmail Badge](https://img.shields.io/badge/kodealtest@gmail.com-d14836?style=flat-square&logo=Gmail&logoColor=white&link=mailto:kodealtest@gmail.com)](mailto:kodealtest@gmail.com)
