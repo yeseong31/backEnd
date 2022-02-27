@@ -17,7 +17,6 @@ https://main.d1nielb0ge84b3.amplifyapp.com/
 * ![Django](https://img.shields.io/badge/Django-092E20.svg?style=flat-square&logo=Django&logoColor=white)
 * ![MariaDB](https://img.shields.io/badge/MariaDB-003545.svg?style=flat-square&logo=MariaDB&logoColor=white)
 * ![OpenAI](https://img.shields.io/badge/OpenAI-412991.svg?style=flat-square&logo=OpenAI&logoColor=white)
-* ![OpenSSL](https://img.shields.io/badge/OpenSSL-721412.svg?style=flat-square&logo=OpenSSL&logoColor=white)
 * ![Microsoft Azure](https://img.shields.io/badge/Microsoft_Azure-0078D4?style=flat-square&logo=Microsoft-azure&logoColor=white)  
   
 </details>
@@ -32,6 +31,11 @@ https://main.d1nielb0ge84b3.amplifyapp.com/
 
 ## 💾 Database
 <img width="880" alt="image" src="https://user-images.githubusercontent.com/66625672/155727540-cd3a03b9-b959-4bb5-9601-92127200b75c.png">
+
+## License
+이 문서는 **한국공학대학교 컴퓨터공학부**의 **"종합설계"** 교과목에서 
+프로젝트 "**Kodeal**(코딩 입문자를 위한 웹 서비스)"을 수행하는<br/>
+S2-1(김정현, 권종석, 한민, 한예성)에 의해 작성된 것으로, 본 프로젝트를 사용하기 위해서는 팀원들의 허락이 필요합니다.
 
 ## 🙋 Contributor
 * [jongseok Kwon](https://github.com/himJJong) <br>
