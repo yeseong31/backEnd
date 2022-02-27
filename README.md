@@ -24,7 +24,7 @@ https://main.d1nielb0ge84b3.amplifyapp.com/
 </details>
 
 ## 🔧 Tools
-* ![Visual Studio Code](https://img.shields.io/badge/Visual_Studio_Code-007ACC.svg?style=flat-square&logo=Visual_Studio_Code&logoColor=white) 
+* ![Visual Studio Code](https://img.shields.io/badge/Visual_Studio_Code-007ACC.svg?style=flat-square&logo=VisualStudioCode&logoColor=white) 
 * ![PyCharm](https://img.shields.io/badge/PyCharm-000000.svg?style=flat-square&logo=PyCharm&logoColor=white) 
 * [![Trello](https://img.shields.io/badge/Trello-0052cc?style=flat-square&logo=Trello&logoColor=white&link=https://trello.com/b/mrg8i2EQ/roadmap/)](https://trello.com/b/mrg8i2EQ/roadmap/)
 * [![Slack](https://img.shields.io/badge/Slack-4a154b.svg?style=flat-square&logo=Slack&logoColor=white&link=https://w1627955690-ob9739492.slack.com/ssb/redirect)](https://w1627955690-ob9739492.slack.com/ssb/redirect)
