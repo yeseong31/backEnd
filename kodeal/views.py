@@ -1,10 +1,5 @@
-import ctypes
-import os
-
-from django.http import JsonResponse
 from django.shortcuts import render
 
-from common.models import User
 from config import my_settings
 
 import openai
