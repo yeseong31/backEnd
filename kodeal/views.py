@@ -33,9 +33,6 @@ def qna_main(request):
         response = question_to_answer(user_text)
         return render(request, 'common/qna_answer.html', {'response': response})
     else:
-        # 로그인 한 상태라면...
-        # user = User.objects.get(userid=request.session.get('userid_session', False))
-        # ctypes.windll.user32.MessageBoxW(0, f'지금 로그인 중인 사용자: {user.userid}', '로그인 확인 창          ')
         return render(request, 'common/qna_main.html')
 
 
