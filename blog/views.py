@@ -4,16 +4,14 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
 import json
 from django.core.serializers import serialize
-import django_filters
-from rest_framework import viewsets, filters
+from rest_framework import viewsets
 
 from kodeal.views import question_to_answer
 from .models import User, Entry
 from common.models import User as Login_User
-from .serializer import UserSerializer, EntrySerializer
+from .serializer import EntrySerializer
 
 from config import my_settings                        # 2.12 추가
-from django.db.models import Max                    # 2.12 추가
 import openai                                       # 2.12 추가
 
 openai.api_key = my_settings.OPENAI_CODEX_KEY       # 2.12 추가
@@ -31,7 +29,7 @@ class IndexView(View):
             user = Login_User.objects.get(userid=userid)
 
             # 해당 userid에 대한 '질문 목록'을 넘겨줘야 함
-            questions = User.objects.filter(userid=user).order_by('-time')
+            questions = User.objects.filter(userid=user).order_by('time')
             data = json.loads(serialize('json', questions))
             return JsonResponse({'items': data, 'status': 200}, status=200)
 
