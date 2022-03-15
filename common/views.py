@@ -115,10 +115,19 @@ class LoginView(View):
                                              'username': user.username,
                                              'email': user.email,
                                              'status': 200}, status=200)
+
+                    # url = '/common/login/'
+                    # datas = {'message': "Go to... '/home'", 'userid': userid, 'username': user.username,
+                    #         'email': user.email, 'status': 200}
+                    # headers = {'Content-Type': 'application/json; charset=utf-8'}
+                    # cookies = {'userid': userid, 'username': user.username}
+                    # response = requests.post(url, data=json.dumps(datas), headers=headers,
+                    #            cookies=cookies, verify=False)
+
                     # 로그인 상태 유지하기(Cookie)
                     if keep_login == 'True':
-                        response.set_cookie('userid', userid, max_age=MINUTE*60)
-                        response.set_cookie('username', user.username.encode('utf-8'), max_age=MINUTE*60)
+                        response.set_cookie('userid', userid, max_age=MINUTE * 60)
+                        response.set_cookie('username', user.username.encode('utf-8'), max_age=MINUTE * 60)
 
                     return response
 
