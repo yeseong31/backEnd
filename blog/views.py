@@ -4,16 +4,14 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
 import json
 from django.core.serializers import serialize
-import django_filters
-from rest_framework import viewsets, filters
+from rest_framework import viewsets
 
-from kodeal.views import question_to_answer
+from kodeal.views import question_to_response, extract_answer_sentences
 from .models import User, Entry
 from common.models import User as Login_User
-from .serializer import UserSerializer, EntrySerializer
+from .serializer import EntrySerializer
 
 from config import my_settings                        # 2.12 추가
-from django.db.models import Max                    # 2.12 추가
 import openai                                       # 2.12 추가
 
 openai.api_key = my_settings.OPENAI_CODEX_KEY       # 2.12 추가
@@ -48,8 +46,10 @@ class IndexView(View):
         if Login_User.objects.filter(userid=userid).exists():
             user = Login_User.objects.get(userid=userid)
 
-            tmp = question_to_answer(question)
-            answer = str(tmp['choices'][0]['text'])
+            response = question_to_response(question)
+
+            # 반환값 중 질문에 대한 답변만 추출
+            answer = extract_answer_sentences(response)
 
             friend = User(question=question,
                           code=answer,
