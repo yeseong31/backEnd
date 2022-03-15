@@ -6,7 +6,7 @@ import json
 from django.core.serializers import serialize
 from rest_framework import viewsets
 
-from kodeal.views import question_to_response
+from kodeal.views import question_to_response, extract_answer_sentences
 from .models import User, Entry
 from common.models import User as Login_User
 from .serializer import EntrySerializer
@@ -46,8 +46,10 @@ class IndexView(View):
         if Login_User.objects.filter(userid=userid).exists():
             user = Login_User.objects.get(userid=userid)
 
-            tmp = question_to_response(question)
-            answer = str(tmp['choices'][0]['text'])
+            response = question_to_response(question)
+
+            # 반환값 중 질문에 대한 답변만 추출
+            answer = extract_answer_sentences(response)
 
             friend = User(question=question,
                           code=answer,
