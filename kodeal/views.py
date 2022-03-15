@@ -45,7 +45,7 @@ def question_to_answer(question):
     response = openai.Completion.create(
         engine="text-davinci-001",
         prompt=question,
-        temperature=0.7,
+        temperature=0.1,    # 0.7에서 0.1로 변경
         max_tokens=64,
         top_p=1,
         frequency_penalty=0,

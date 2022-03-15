@@ -31,7 +31,7 @@ class IndexView(View):
             user = Login_User.objects.get(userid=userid)
 
             # 해당 userid에 대한 '질문 목록'을 넘겨줘야 함
-            questions = User.objects.filter(userid=user).order_by('-time')
+            questions = User.objects.filter(userid=user).order_by('time')
             data = json.loads(serialize('json', questions))
             return JsonResponse({'items': data, 'status': 200}, status=200)
 
