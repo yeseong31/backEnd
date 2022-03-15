@@ -6,7 +6,7 @@ import json
 from django.core.serializers import serialize
 from rest_framework import viewsets
 
-from kodeal.views import question_to_answer
+from kodeal.views import question_to_response
 from .models import User, Entry
 from common.models import User as Login_User
 from .serializer import EntrySerializer
@@ -46,7 +46,7 @@ class IndexView(View):
         if Login_User.objects.filter(userid=userid).exists():
             user = Login_User.objects.get(userid=userid)
 
-            tmp = question_to_answer(question)
+            tmp = question_to_response(question)
             answer = str(tmp['choices'][0]['text'])
 
             friend = User(question=question,
