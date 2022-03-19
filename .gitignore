@@ -173,5 +173,6 @@ ENV/
 my_settings.py
 kodeal.crt
 kodeal.key
+answer_test_file.txt
 
 # End of https://www.gitignore.io/api/macos,linux,django,python,pycharm

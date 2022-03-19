@@ -42,18 +42,15 @@ class IndexView(View):
         question = request['question']
         userid = request['userid']
 
+        response = question_to_response(question)
+        # 반환값 중 질문에 대한 답변만 추출
+        answer = extract_answer_sentences(response)
+
         # 전달 받은 아이디가 DB에 있으면
         if Login_User.objects.filter(userid=userid).exists():
             user = Login_User.objects.get(userid=userid)
 
-            response = question_to_response(question)
-
-            # 반환값 중 질문에 대한 답변만 추출
-            answer = extract_answer_sentences(response)
-
-            friend = User(question=question,
-                          code=answer,
-                          userid=user)
+            friend = User(question=question, code=answer, userid=user)
             friend.save()
 
             return JsonResponse({'answer': answer, 'status': 200}, status=200)

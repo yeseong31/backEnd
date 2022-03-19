@@ -29,9 +29,22 @@ def qna_main(request):
 
         # OpenAI Codex의 반환값 전체를 받아옴
         response = question_to_response(user_text)
-
         # 반환값 중 질문에 대한 답변만 추출
         answer = extract_answer_sentences(response)
+
+        # ———————————————————— 테스트 ————————————————————
+        # 앞뒤 개행 문자 제거
+        answer = remove_two_newline_char(answer)
+        # 맨 앞 글자가 콜론(:)이라면 제거
+        answer = remove_first_colon(answer)
+        # 콜론(:)을 만나면 개행
+        answer = insert_a_newline_when_encountering_colons(answer)
+
+        # ————————————————————————————————————————————————
+
+        # 답변 목록을 메모장으로 저장하여 문장 확인(테스트용)
+        with open('answer_test_file.txt', 'w') as f:
+            f.write(answer)
 
         return render(request, 'common/qna_answer.html', {'response': answer})
     else:
@@ -66,3 +79,30 @@ def extract_answer_sentences(response):
 
     print(answer)
     return answer
+
+
+# 결과로 전달되는 answer 문장에서 맨 앞의 개행 문자 두 개 제거
+def remove_two_newline_char(answer):
+    return answer.strip()
+
+
+# 첫 글자가 콜론(:)이라면 제거
+def remove_first_colon(answer):
+    if answer[0] == ':':
+        return answer[2:]
+    else:
+        return answer
+
+
+# 콜론(:)을 만나면 개행 문자 삽입
+def insert_a_newline_when_encountering_colons(answer):
+    result = []
+    # 문장 내의 글자 하나하나를 살핌
+    for i, c in enumerate(answer):
+        result.append(c)
+        # 만약 콜론 발견 시 개행 문자도 같이 삽입
+        if c == ':':
+            result.append('\n')
+
+    # 생성된 결과 리스트를 문자열로 반환
+    return ''.join(map(str, result))
