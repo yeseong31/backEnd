@@ -5,10 +5,34 @@ from django.shortcuts import render
 from config import my_settings
 
 import openai
+import os
+import sys
+import urllib.request
+import ssl
 
 # OpenAI API 키, 항상 비워놓고 push하기
 openai.api_key = my_settings.OPENAI_CODEX_KEY
 openai.Engine.list()
+
+# 파파고 api 함수 - 3.20
+def papago(a):
+    text = a
+    client_id = "Client ID 값" # 개발자센터에서 발급받은 Client ID 값
+    client_secret = "Client Secret 값" # 개발자센터에서 발급받은 Client Secret 값
+    encText = urllib.parse.quote(a)
+    data = "source=ko&target=en&text=" + encText
+    url = "https://openapi.naver.com/v1/papago/n2mt"
+    request = urllib.request.Request(url)
+    request.add_header("X-Naver-Client-Id",client_id)
+    request.add_header("X-Naver-Client-Secret",client_secret)   
+    context = ssl._create_unverified_context()
+    response = urllib.request.urlopen(request, data=data.encode("utf-8"), context=context)
+    rescode = response.getcode()
+    if(rescode==200):
+        response_body = response.read()
+        print(response_body.decode('utf-8'))
+    else:
+        print("Error Code:" + rescode)
 
 
 # main page
