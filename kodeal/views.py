@@ -1,6 +1,8 @@
 import json
+import re
 
 from django.shortcuts import render
+from nltk import sent_tokenize
 
 from config import my_settings
 
@@ -24,29 +26,24 @@ def qna_answer(request):
 # qna action
 def qna_main(request):
     if request.method == 'POST':
-        user_code = request.POST['code_area']  # 코드 영역
-        user_text = request.POST['text_area'] + " with python code" # 질문 영역
+        # user_code = request.POST['code_area']  # 코드 영역
+        user_text = request.POST['text_area']    # 질문 영역
+
+        # 파이썬 분야에 대한 질문에 한정하기 위함
+        question = 'Python 3' + '\n' + user_text
 
         # OpenAI Codex의 반환값 전체를 받아옴
-        response = question_to_response(user_text)
+        response = question_to_response(question)
         # 반환값 중 질문에 대한 답변만 추출
         answer = extract_answer_sentences(response)
 
-        # ———————————————————— 테스트 ————————————————————
-        # 앞뒤 개행 문자 제거
-        answer = remove_two_newline_char(answer)
-        # 맨 앞 글자가 콜론(:)이라면 제거
-        answer = remove_first_colon(answer)
-        # 콜론(:)을 만나면 개행
-        answer = insert_a_newline_when_encountering_colons(answer)
-
-        # ————————————————————————————————————————————————
-
         # 답변 목록을 메모장으로 저장하여 문장 확인(테스트용)
         with open('answer_test_file.txt', 'w') as f:
-            f.write(answer)
+            sentences = sent_tokenize(answer)
+            for sentence in sentences:
+                f.write(sentence + '\n')
 
-        return render(request, 'common/qna_answer.html', {'response': answer})
+        return render(request, 'common/qna_answer.html', {'answer': answer})
     else:
         return render(request, 'common/qna_main.html')
 
@@ -55,10 +52,10 @@ def qna_main(request):
 def question_to_response(question):
     # codex 변환 과정
     response = openai.Completion.create(
-        engine="text-davinci-001",
+        engine="text-davinci-002",
         prompt=question,
         temperature=0.1,
-        max_tokens=64,
+        max_tokens=4000,    # Codex가 답할 수 있는 최대 문장 바이트 수 (text-davinci-code의 경우 2048B)
         top_p=1,
         frequency_penalty=0,
         presence_penalty=0
@@ -78,10 +75,28 @@ def extract_answer_sentences(response):
     answer = json_choices['text']
 
     print(answer)
+
+    # ———————————————————— 테스트 ————————————————————
+    # 문장 앞뒤로 불필요한 문자 제거
+    answer = remove_unnecessary_char(answer)
+    # 콜론(:)을 만나면 개행 (프론트엔트에서 해결하는 것으로 변경)
+    # answer = insert_a_newline_when_encountering_colons(answer)
+    # 결과에 한글이 포함되어 있는지 확인
+    answer = check_korean_answer(answer)
+
+    # ————————————————————————————————————————————————
+
     return answer
 
 
-# 결과로 전달되는 answer 문장에서 맨 앞의 개행 문자 두 개 제거
+# answer 문장 앞뒤로 불필요한 문자 제거
+def remove_unnecessary_char(answer):
+    answer = remove_first_colon(answer)
+    answer = remove_two_newline_char(answer)
+    return answer
+
+
+# 결과로 전달되는 answer 문장에서 맨 앞의 개행 문자 전처리
 def remove_two_newline_char(answer):
     return answer.strip()
 
@@ -94,7 +109,7 @@ def remove_first_colon(answer):
         return answer
 
 
-# 콜론(:)을 만나면 개행 문자 삽입
+# 콜론(:)을 만나면 개행 문자 삽입 (사용하지 않음)
 def insert_a_newline_when_encountering_colons(answer):
     result = []
     # 문장 내의 글자 하나하나를 살핌
@@ -106,3 +121,17 @@ def insert_a_newline_when_encountering_colons(answer):
 
     # 생성된 결과 리스트를 문자열로 반환
     return ''.join(map(str, result))
+
+
+# 반환된 결과에 한글이 포함되는지 확인
+# 단, "print('예시')"와 같이 코드로써 한글이 반환되는 경우는 제외해야 함
+def check_korean_answer(answer):
+    # 한글을 포함하는지 판별하는 정규식
+    regex = re.compile(r'[가-힣ㄱ-ㅎㅏ-ㅣ]')
+
+    for ans in answer:
+        # 문장 내에 한글이 포함되어 있으면
+        if regex.match(ans):
+            break
+
+    return answer

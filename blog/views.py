@@ -37,13 +37,15 @@ class IndexView(View):
         else:
             return JsonResponse({'message': 'The user id does not exist.', 'status': 400}, status=400)
 
+    # Codex 기능 수행 함수
     def post(self, request):
         request = json.loads(request.body)
         question = request['question']
         userid = request['userid']
 
+        # OpenAI Codex의 반환값 전체를 response로 받아옴
         response = question_to_response(question)
-        # 반환값 중 질문에 대한 답변만 추출
+        # 반환값 response 중 질문에 대한 답변만 추출
         answer = extract_answer_sentences(response)
 
         # 전달 받은 아이디가 DB에 있으면
