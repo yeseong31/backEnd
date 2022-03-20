@@ -6,7 +6,7 @@ import json
 from django.core.serializers import serialize
 from rest_framework import viewsets
 
-from kodeal.views import question_to_response, extract_answer_sentences
+from kodeal.views import question_to_response, extract_answer_sentences, papago
 from .models import User, Entry
 from common.models import User as Login_User
 from .serializer import EntrySerializer
@@ -37,15 +37,19 @@ class IndexView(View):
         else:
             return JsonResponse({'message': 'The user id does not exist.', 'status': 400}, status=400)
 
-    # Codex 기능 수행 함수
+    # Codex 기능 수행 함수 (프론트엔드와 연동되는 실질적인 기능 담당)
     def post(self, request):
         request = json.loads(request.body)
         question = request['question']
         userid = request['userid']
 
-        # OpenAI Codex의 반환값 전체를 response로 받아옴
+        # 한글로 입력된 문장을 Papago API를 통해 번역 수행
+        # 파이썬 분야에 대한 질문에 한정하기 위해 'Python 3' 문장 삽입
+        question = 'Python 3' + '\n' + papago(question)
+
+        # OpenAI Codex의 반환값 전체를 받아옴
         response = question_to_response(question)
-        # 반환값 response 중 질문에 대한 답변만 추출
+        # 반환값 중 질문에 대한 답변만 추출
         answer = extract_answer_sentences(response)
 
         # 전달 받은 아이디가 DB에 있으면
@@ -58,6 +62,8 @@ class IndexView(View):
             return JsonResponse({'answer': answer, 'status': 200}, status=200)
         # 전달받은 아이디가 DB에 없으면 400 에러
         else:
+            friend = User(question=question, code=answer, userid='test')
+            friend.save()
             return JsonResponse({'message': 'The user id does not exist.', 'status': 400}, status=400)
 
     def put(self, request):

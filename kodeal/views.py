@@ -84,10 +84,10 @@ def qna_main(request):
 def question_to_response(question):
     # codex 변환 과정
     response = openai.Completion.create(
-        engine="text-davinci-002",
+        engine="text-davinci-002",    # 현재 Davinci 모델의 최신 버전(03.20 기준)
         prompt=question,
         temperature=0.1,
-        max_tokens=4000,    # Codex가 답할 수 있는 최대 문장 바이트 수 (text-davinci-code의 경우 2048 Byte)
+        max_tokens=4000,    # Codex가 답할 수 있는 최대 문장 바이트 수 (text-davinci-001의 경우 2048 Byte 였음)
         top_p=1,
         frequency_penalty=0,
         presence_penalty=0
