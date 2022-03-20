@@ -4,6 +4,7 @@ import re
 from django.shortcuts import render
 from nltk import sent_tokenize
 
+from common.models import User as Login_User
 from blog.models import User
 from config import my_settings
 
@@ -76,7 +77,9 @@ def qna_main(request):
             for sentence in sentences:
                 f.write(sentence + '\n')
 
-        friend = User(question=question, code=answer, userid='BACKEND')
+        # 테스트 데이터 삽입
+        user = Login_User.objects.get(userid='testid')
+        friend = User(question=question, code=answer, userid=user)
         friend.save()
 
         return render(request, 'common/qna_answer.html', {'answer': answer})
