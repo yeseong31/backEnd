@@ -13,28 +13,35 @@ import urllib.request
 import ssl
 
 # OpenAI API 키, 항상 비워놓고 push하기
+from config.my_settings import CLIENT_ID, CLIENT_SECRET
+
 openai.api_key = my_settings.OPENAI_CODEX_KEY
 openai.Engine.list()
 
+
 # 파파고 api 함수 - 3.20
-def papago(a):
-    text = a
-    client_id = "Client ID 값" # 개발자센터에서 발급받은 Client ID 값
-    client_secret = "Client Secret 값" # 개발자센터에서 발급받은 Client Secret 값
-    encText = urllib.parse.quote(a)
+def papago(text):
+    client_id = CLIENT_ID          # 개발자센터에서 발급받은 Client ID 값 (my_settings.py 참고)
+    client_secret = CLIENT_SECRET  # 개발자센터에서 발급받은 Client Secret 값 (my_settings.py 참고)
+    encText = urllib.parse.quote(text)
     data = "source=ko&target=en&text=" + encText
     url = "https://openapi.naver.com/v1/papago/n2mt"
+
     request = urllib.request.Request(url)
-    request.add_header("X-Naver-Client-Id",client_id)
-    request.add_header("X-Naver-Client-Secret",client_secret)   
+    request.add_header("X-Naver-Client-Id", client_id)
+    request.add_header("X-Naver-Client-Secret", client_secret)
+
     context = ssl._create_unverified_context()
     response = urllib.request.urlopen(request, data=data.encode("utf-8"), context=context)
     rescode = response.getcode()
-    if(rescode==200):
+
+    if rescode == 200:
         response_body = response.read()
-        print(response_body.decode('utf-8'))
+        # Papago API의 반환값 중에서 "translatedText"에 해당하는 값만 추출해야 함
+        return extract_question_sentences(response_body.decode('utf-8'))
     else:
         print("Error Code:" + rescode)
+        return 'ERROR'
 
 
 # main page
@@ -53,15 +60,16 @@ def qna_main(request):
         # user_code = request.POST['code_area']  # 코드 영역
         user_text = request.POST['text_area']    # 질문 영역
 
-        # 파이썬 분야에 대한 질문에 한정하기 위함
-        question = 'Python 3' + '\n' + user_text
+        # 한글로 입력된 문장을 Papago API를 통해 번역 수행
+        # 파이썬 분야에 대한 질문에 한정하기 위해 'Python 3' 문장 삽입
+        question = 'Python 3' + '\n' + papago(user_text)
 
         # OpenAI Codex의 반환값 전체를 받아옴
         response = question_to_response(question)
         # 반환값 중 질문에 대한 답변만 추출
         answer = extract_answer_sentences(response)
 
-        # 답변 목록을 메모장으로 저장하여 문장 확인(테스트용)
+        # 답변 목록을 메모장으로 저장하여 문장 확인(테스트용 파일 생성)
         with open('answer_test_file.txt', 'w') as f:
             sentences = sent_tokenize(answer)
             for sentence in sentences:
@@ -79,12 +87,18 @@ def question_to_response(question):
         engine="text-davinci-002",
         prompt=question,
         temperature=0.1,
-        max_tokens=4000,    # Codex가 답할 수 있는 최대 문장 바이트 수 (text-davinci-code의 경우 2048B)
+        max_tokens=4000,    # Codex가 답할 수 있는 최대 문장 바이트 수 (text-davinci-code의 경우 2048 Byte)
         top_p=1,
         frequency_penalty=0,
         presence_penalty=0
     )
     return response
+
+
+# Codex의 입력으로 넣을 문장을 번역한 결과(Papago) 중에서 사용자의 질문에 해당하는 부분만 추출하는 함수
+def extract_question_sentences(response):
+    json_object = json.loads(response)
+    return json_object['message']['result']['translatedText']
 
 
 # Codex로부터 반환된 answer 값 전체 중에서 사용자의 질문에 대한 답변만 추출하는 함수
@@ -98,7 +112,7 @@ def extract_answer_sentences(response):
     # JSON 형태로 변환된 문자열 중 키가 'text'인 값을 return
     answer = json_choices['text']
 
-    print(answer)
+    # print(answer)
 
     # ———————————————————— 테스트 ————————————————————
     # 문장 앞뒤로 불필요한 문자 제거
@@ -109,7 +123,6 @@ def extract_answer_sentences(response):
     answer = check_korean_answer(answer)
 
     # ————————————————————————————————————————————————
-
     return answer
 
 
