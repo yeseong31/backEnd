@@ -10,10 +10,6 @@ import sys
 import urllib.request
 import ssl
 
-
-
-
-
 # OpenAI API 키, 항상 비워놓고 push하기
 openai.api_key = my_settings.OPENAI_CODEX_KEY
 openai.Engine.list()
