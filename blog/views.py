@@ -62,7 +62,7 @@ class IndexView(View):
             return JsonResponse({'answer': answer, 'status': 200}, status=200)
         # 전달받은 아이디가 DB에 없으면 400 에러
         else:
-            friend = User(question=question, code=answer, userid='test')
+            friend = User(question=question, code=answer, userid='FRONTEND')
             friend.save()
             return JsonResponse({'message': 'The user id does not exist.', 'status': 400}, status=400)
 

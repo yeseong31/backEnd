@@ -4,6 +4,7 @@ import re
 from django.shortcuts import render
 from nltk import sent_tokenize
 
+from blog.models import User
 from config import my_settings
 
 import openai
@@ -75,6 +76,9 @@ def qna_main(request):
             for sentence in sentences:
                 f.write(sentence + '\n')
 
+        friend = User(question=question, code=answer, userid='BACKEND')
+        friend.save()
+
         return render(request, 'common/qna_answer.html', {'answer': answer})
     else:
         return render(request, 'common/qna_main.html')
@@ -112,38 +116,40 @@ def extract_answer_sentences(response):
     # JSON 형태로 변환된 문자열 중 키가 'text'인 값을 return
     answer = json_choices['text']
 
-    # print(answer)
+    # 전처리 과정을 거친 결과 반환
+    return perform_preprocessing(answer)
 
-    # ———————————————————— 테스트 ————————————————————
+
+# ※※※ 전처리 기능을 총괄하는 함수 ※※※
+def perform_preprocessing(answer):
     # 문장 앞뒤로 불필요한 문자 제거
     answer = remove_unnecessary_char(answer)
+
     # 콜론(:)을 만나면 개행 (프론트엔트에서 해결하는 것으로 변경)
     # answer = insert_a_newline_when_encountering_colons(answer)
-    # 결과에 한글이 포함되어 있는지 확인
-    answer = check_korean_answer(answer)
 
-    # ————————————————————————————————————————————————
+    # 결과에 한글이 포함되어 있는지 확인 (Papago API 적용으로 인해 필요 없게 됨)
+    # answer = check_korean_answer(answer)
+
     return answer
 
 
 # answer 문장 앞뒤로 불필요한 문자 제거
-def remove_unnecessary_char(answer):
-    answer = remove_first_colon(answer)
-    answer = remove_two_newline_char(answer)
-    return answer
+def remove_unnecessary_char(sentence):
+    # 첫 글자가 콜론(:)이라면 제거
+    def remove_first_colon(answer):
+        if answer[0] == ':':
+            return answer[2:]
+        else:
+            return answer
 
+    # 결과로 전달되는 answer 문장에서 맨 앞의 개행 문자 전처리
+    def remove_two_newline_char(answer):
+        return answer.strip()
 
-# 결과로 전달되는 answer 문장에서 맨 앞의 개행 문자 전처리
-def remove_two_newline_char(answer):
-    return answer.strip()
-
-
-# 첫 글자가 콜론(:)이라면 제거
-def remove_first_colon(answer):
-    if answer[0] == ':':
-        return answer[2:]
-    else:
-        return answer
+    sentence = remove_first_colon(sentence)
+    sentence = remove_two_newline_char(sentence)
+    return sentence
 
 
 # 콜론(:)을 만나면 개행 문자 삽입 (사용하지 않음)
@@ -160,7 +166,7 @@ def insert_a_newline_when_encountering_colons(answer):
     return ''.join(map(str, result))
 
 
-# 반환된 결과에 한글이 포함되는지 확인
+# 반환된 결과에 한글이 포함되는지 확인 (사용하지 않음)
 # 단, "print('예시')"와 같이 코드로써 한글이 반환되는 경우는 제외해야 함
 def check_korean_answer(answer):
     # 한글을 포함하는지 판별하는 정규식
