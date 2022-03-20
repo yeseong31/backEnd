@@ -33,7 +33,7 @@ def qna_main(request):
         # 반환값 중 질문에 대한 답변만 추출
         answer = extract_answer_sentences(response)
 
-        return render(request, 'common/qna_answer.html', {'response': answer})
+        return render(request, 'common/qna_answer.html', {'answer': answer})
     else:
         return render(request, 'common/qna_main.html')
 
