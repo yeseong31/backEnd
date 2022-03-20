@@ -60,14 +60,16 @@ def qna_answer(request):
 def qna_main(request):
     if request.method == 'POST':
         # user_code = request.POST['code_area']  # 코드 영역
-        user_text = request.POST['text_area']    # 질문 영역
+        question = request.POST['text_area']    # 질문 영역 (03.20 수정: user_text → question 으로 이름 변경)
 
         # 한글로 입력된 문장을 Papago API를 통해 번역 수행
         # 파이썬 분야에 대한 질문에 한정하기 위해 'Python 3' 문장 삽입
-        question = 'Python 3' + '\n' + papago(user_text)
+        pre_question = 'Python 3' + '\n' + papago(question)
+        # 코드에 대한 설명 추가 (테스트... 결과값 앞에 "to the code" 라는 문장이 섞이기 때문에 보류)
+        # pre_question = pre_question + '\n\n' + 'Add documentation'
 
         # OpenAI Codex의 반환값 전체를 받아옴
-        response = question_to_response(question)
+        response = question_to_response(pre_question)
         # 반환값 중 질문에 대한 답변만 추출
         answer = extract_answer_sentences(response)
 

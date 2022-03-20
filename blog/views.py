@@ -45,10 +45,10 @@ class IndexView(View):
 
         # 한글로 입력된 문장을 Papago API를 통해 번역 수행
         # 파이썬 분야에 대한 질문에 한정하기 위해 'Python 3' 문장 삽입
-        question = 'Python 3' + '\n' + papago(question)
+        pre_question = 'Python 3' + '\n' + papago(question)
 
         # OpenAI Codex의 반환값 전체를 받아옴
-        response = question_to_response(question)
+        response = question_to_response(pre_question)
         # 반환값 중 질문에 대한 답변만 추출
         answer = extract_answer_sentences(response)
 
