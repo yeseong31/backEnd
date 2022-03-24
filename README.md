@@ -10,7 +10,6 @@ kodeal web page using django<br/>
 
 ## 🏠 Home Page
 <img width="1280" alt="image" src="https://user-images.githubusercontent.com/66625672/155848689-05d9ba0f-559b-4409-95d5-2a5f18905761.png">
-https://main.d1nielb0ge84b3.amplifyapp.com/
 
 ## 🛠️ Built With
 * ![React](https://img.shields.io/badge/React-61DAFB.svg?style=flat-square&logo=React&logoColor=black)
