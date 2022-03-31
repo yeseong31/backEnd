@@ -9,8 +9,6 @@ from blog.models import User
 from config import my_settings
 
 import openai
-import os
-import sys
 import urllib.request
 import ssl
 
@@ -56,17 +54,14 @@ def qna_answer(request):
     return render(request, 'common/qna_answer.html')
 
 
-# qna action
+# qna action (백엔드)
 def qna_main(request):
     if request.method == 'POST':
-        # user_code = request.POST['code_area']  # 코드 영역
         question = request.POST['text_area']    # 질문 영역 (03.20 수정: user_text → question 으로 이름 변경)
 
         # 한글로 입력된 문장을 Papago API를 통해 번역 수행
         # 파이썬 분야에 대한 질문에 한정하기 위해 'Python 3' 문장 삽입
-        pre_question = 'Python 3' + '\n' + papago(question)
-        # 코드에 대한 설명 추가 (테스트... 결과값 앞에 "to the code" 라는 문장이 섞이기 때문에 보류)
-        # pre_question = pre_question + '\n\n' + 'Add documentation'
+        pre_question = 'Python 3' + '\n' + papago(question) + 'with code'
 
         # OpenAI Codex의 반환값 전체를 받아옴
         response = question_to_response(pre_question)
@@ -130,12 +125,6 @@ def perform_preprocessing(answer):
     # 문장 앞뒤로 불필요한 문자 제거
     answer = remove_unnecessary_char(answer)
 
-    # 콜론(:)을 만나면 개행 (프론트엔트에서 해결하는 것으로 변경)
-    # answer = insert_a_newline_when_encountering_colons(answer)
-
-    # 결과에 한글이 포함되어 있는지 확인 (Papago API 적용으로 인해 필요 없게 됨)
-    # answer = check_korean_answer(answer)
-
     return answer
 
 
@@ -155,31 +144,3 @@ def remove_unnecessary_char(sentence):
     sentence = remove_first_colon(sentence)
     sentence = remove_two_newline_char(sentence)
     return sentence
-
-
-# 콜론(:)을 만나면 개행 문자 삽입 (사용하지 않음)
-def insert_a_newline_when_encountering_colons(answer):
-    result = []
-    # 문장 내의 글자 하나하나를 살핌
-    for i, c in enumerate(answer):
-        result.append(c)
-        # 만약 콜론 발견 시 개행 문자도 같이 삽입
-        if c == ':':
-            result.append('\n')
-
-    # 생성된 결과 리스트를 문자열로 반환
-    return ''.join(map(str, result))
-
-
-# 반환된 결과에 한글이 포함되는지 확인 (사용하지 않음)
-# 단, "print('예시')"와 같이 코드로써 한글이 반환되는 경우는 제외해야 함
-def check_korean_answer(answer):
-    # 한글을 포함하는지 판별하는 정규식
-    regex = re.compile(r'[가-힣ㄱ-ㅎㅏ-ㅣ]')
-
-    for ans in answer:
-        # 문장 내에 한글이 포함되어 있으면
-        if regex.match(ans):
-            break
-
-    return answer
