@@ -28,11 +28,3 @@ class Entry(models.Model):
     status = models.CharField(choices=STATUS_SET, default=STATUS_DRAFT, max_length=8)
     author = models.ForeignKey(User, related_name='entries', on_delete=models.CASCADE)
 
-
-class Codexset(models.Model):
-    userid = models.ForeignKey(Login_user, related_name="%(class)s_userid", on_delete=models.SET_DEFAULT,
-                               default=DELETED_USER, db_column='userid', verbose_name='사용자 아이디')
-    temperature = models.FloatField(max_length=10,
-                                    verbose_name='코덱스온도',
-                                    default=0.1)    # 사용자 별 최적의 코덱스 온도 설정을 위함
-
