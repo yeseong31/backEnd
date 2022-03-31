@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import qna_main, index, qna_answer
+from blog.views import index, qna_main, qna_answer
 
 app_name = 'kodeal'
 
