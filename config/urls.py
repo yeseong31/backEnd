@@ -20,9 +20,9 @@ from django.views.generic import RedirectView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('home/', include('kodeal.urls')),  # kodeal page
+    path('home/', include('kodeal.urls')),
     path('', RedirectView.as_view(url='/home/', permanent=True)),
     path('common/', include('common.urls')),  # common(login)
     path('google/', include('allauth.urls')),  # common(google login)
-    path('blog/', include('blog.urls')),
+    path('blog/', include('blog.urls')),    # kodeal page
 ]

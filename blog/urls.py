@@ -2,10 +2,19 @@ from rest_framework import routers
 from .views import EntryViewSet
 from django.urls import path
 from . import views
+
 app_name = 'blog'
+
 urlpatterns = [
     path('', views.IndexView.as_view(), name='index'),
-    path('<int:id>', views.IndexView.as_view())
+    path('<int:id>', views.IndexView.as_view()),
+
+    # 03/31 부로 kodeal 디렉터리의 내용을 blog 디렉터리로 통합
+
+    # QnA화면
+    path('qna_main/', views.qna_main, name='qna_main'),
+    path('qna_answer/', views.qna_answer, name='qna_answer'),
 ]
+
 router = routers.DefaultRouter()
 router.register(r'entries', EntryViewSet)
