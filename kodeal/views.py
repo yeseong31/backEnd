@@ -130,7 +130,7 @@ def perform_preprocessing(answer):
     # 문장 앞뒤로 불필요한 문자 제거
     answer = remove_unnecessary_char(answer)
 
-    # 콜론(:)을 만나면 개행 (프론트엔트에서 해결하는 것으로 변경)
+    # 콜론(:)을 만나면 개행 (프론트엔드에서 해결하는 것으로 변경)
     # answer = insert_a_newline_when_encountering_colons(answer)
 
     # 결과에 한글이 포함되어 있는지 확인 (Papago API 적용으로 인해 필요 없게 됨)
