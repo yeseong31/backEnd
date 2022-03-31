@@ -12,17 +12,16 @@ from nltk import sent_tokenize
 from rest_framework import viewsets
 
 from config.my_settings import CLIENT_ID, CLIENT_SECRET
-from .models import User, Entry
+
 from .serializer import EntrySerializer
-
 from common.models import User as Login_User
-from blog.models import User
+from blog.models import User, Entry
 
-from config import my_settings  # 2.12 추가
-import openai  # 2.12 추가
+from config import my_settings
+import openai
 
-openai.api_key = my_settings.OPENAI_CODEX_KEY  # 2.12 추가
-openai.Engine.list()  # 2.12 추가
+openai.api_key = my_settings.OPENAI_CODEX_KEY
+openai.Engine.list()
 
 
 class IndexView(View):
