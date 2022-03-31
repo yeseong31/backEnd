@@ -7,8 +7,8 @@ DELETED_USER = "deleted_user"
 
 
 class User(models.Model):
-    question = models.CharField(max_length=1024, verbose_name='질문')
-    code = models.CharField(max_length=1024, verbose_name='코드')
+    question = models.CharField(max_length=4000, verbose_name='질문')
+    code = models.CharField(max_length=4000, verbose_name='코드')
     time = models.DateTimeField(verbose_name='작성일', help_text="time", auto_now_add=True)
     userid = models.ForeignKey(Login_user, related_name="%(class)s_userid", on_delete=models.SET_DEFAULT,
                                default=DELETED_USER, db_column='userid', verbose_name='사용자 아이디')
@@ -27,3 +27,12 @@ class Entry(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     status = models.CharField(choices=STATUS_SET, default=STATUS_DRAFT, max_length=8)
     author = models.ForeignKey(User, related_name='entries', on_delete=models.CASCADE)
+
+
+class Codexset(models.Model):
+    userid = models.ForeignKey(Login_user, related_name="%(class)s_userid", on_delete=models.SET_DEFAULT,
+                               default=DELETED_USER, db_column='userid', verbose_name='사용자 아이디')
+    temperature = models.FloatField(max_length=10,
+                                    verbose_name='코덱스온도',
+                                    default=0.1)    # 사용자 별 최적의 코덱스 온도 설정을 위함
+
