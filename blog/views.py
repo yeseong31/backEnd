@@ -51,7 +51,7 @@ class IndexView(View):
 
         # 한글로 입력된 문장을 Papago API를 통해 번역 수행
         # 파이썬 분야에 대한 질문에 한정하기 위해 'Python 3' 문장 삽입
-        pre_question = 'Python 3' + '\n' + papago(question)
+        pre_question = 'Python 3' + '\n' + papago(question) + 'with code'
 
         # OpenAI Codex의 반환값 전체를 받아옴
         response = question_to_response(pre_question)
@@ -100,7 +100,7 @@ class EntryViewSet(viewsets.ModelViewSet):
     serializer_class = EntrySerializer
 
 
-# 03/31 부로 kodeal 디렉터리의 내용을 blog 디렉터리로 통합
+# 03/31 부로 kodeal 디렉터리의 내용을 blog 디렉터리로 통합 ———————————————————————————————————————————
 
 # 파파고 api 함수 - 3.20
 def papago(text):
@@ -171,7 +171,7 @@ def qna_main(request):
 def question_to_response(question):
     # codex 변환 과정
     response = openai.Completion.create(
-        engine="text-davinci-002",  # 현재 Davinci 모델의 최신 버전(03.20 기준)
+        engine='text-davinci-002',  # 현재 Davinci 모델의 최신 버전(03.20 기준)
         prompt=question,
         temperature=0.1,
         max_tokens=4000,  # Codex가 답할 수 있는 최대 문장 바이트 수 (text-davinci-001의 경우 2048 Byte 였음)
