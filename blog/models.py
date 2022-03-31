@@ -10,10 +10,10 @@ class User(models.Model):
                                default=DELETED_USER, db_column='userid', verbose_name='사용자 아이디')
     question = models.CharField(max_length=4000, verbose_name='질문')
     question_papago = models.CharField(max_length=4000, verbose_name='질문(papago)',
-                                       null=True, blank=True)
+                                       null=True, blank=True, default=question)
     code = models.CharField(max_length=4000, verbose_name='답변')
     time = models.DateTimeField(verbose_name='작성일', help_text="time", auto_now_add=True)
-    star = models.FloatField(verbose_name='별점', null=True, blank=True)
+    star = models.FloatField(verbose_name='별점', null=True, blank=True, default=5.0)
     language = models.CharField(max_length=100, verbose_name='사용언어', null=True, blank=True, default='Python 3')
 
 
