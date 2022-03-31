@@ -17,6 +17,7 @@ urlpatterns = [
 
     # 아이디 중복 확인
     path('signup/check/id/', CheckID.as_view(), name='duplicate_id_check'),
+
     # 이메일 인증번호 확인
     path('signup/auth/email/', EmailAuth.as_view(), name='auth_email'),
     path('signup/auth/email/comp/', EmailAuthComplete.as_view(), name='auth_email_complete'),

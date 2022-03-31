@@ -12,17 +12,16 @@ from nltk import sent_tokenize
 from rest_framework import viewsets
 
 from config.my_settings import CLIENT_ID, CLIENT_SECRET
-from .models import User, Entry
+
 from .serializer import EntrySerializer
-
 from common.models import User as Login_User
-from blog.models import User
+from blog.models import User, Entry
 
-from config import my_settings  # 2.12 추가
-import openai  # 2.12 추가
+from config import my_settings
+import openai
 
-openai.api_key = my_settings.OPENAI_CODEX_KEY  # 2.12 추가
-openai.Engine.list()  # 2.12 추가
+openai.api_key = my_settings.OPENAI_CODEX_KEY
+openai.Engine.list()
 
 
 class IndexView(View):
@@ -52,7 +51,7 @@ class IndexView(View):
 
         # 한글로 입력된 문장을 Papago API를 통해 번역 수행
         # 파이썬 분야에 대한 질문에 한정하기 위해 'Python 3' 문장 삽입
-        pre_question = 'Python 3' + '\n' + papago(question)
+        pre_question = 'Python 3' + '\n' + papago(question) + 'with code'
 
         # OpenAI Codex의 반환값 전체를 받아옴
         response = question_to_response(pre_question)
@@ -101,7 +100,7 @@ class EntryViewSet(viewsets.ModelViewSet):
     serializer_class = EntrySerializer
 
 
-# 03/31 부로 kodeal 디렉터리의 내용을 blog 디렉터리로 통합
+# 03/31 부로 kodeal 디렉터리의 내용을 blog 디렉터리로 통합 ———————————————————————————————————————————
 
 # 파파고 api 함수 - 3.20
 def papago(text):
@@ -145,7 +144,8 @@ def qna_main(request):
 
         # 한글로 입력된 문장을 Papago API를 통해 번역 수행
         # 파이썬 분야에 대한 질문에 한정하기 위해 'Python 3' 문장 삽입
-        pre_question = 'Python 3' + '\n' + papago(question) + 'with code'
+        translate_question = papago(question)
+        pre_question = 'Python 3' + '\n' + translate_question + 'with code'
 
         # OpenAI Codex의 반환값 전체를 받아옴
         response = question_to_response(pre_question)
@@ -160,7 +160,12 @@ def qna_main(request):
 
         # 테스트 데이터 삽입
         user = Login_User.objects.get(userid='testid')
-        friend = User(question=question, code=answer, userid=user)
+        friend = User(question=question,
+                      papago=translate_question,
+                      code=answer,
+                      userid=user,
+                      star=5.0,
+                      language='Python 3')
         friend.save()
 
         return render(request, 'common/qna_answer.html', {'answer': answer})
@@ -172,7 +177,7 @@ def qna_main(request):
 def question_to_response(question):
     # codex 변환 과정
     response = openai.Completion.create(
-        engine="text-davinci-002",  # 현재 Davinci 모델의 최신 버전(03.20 기준)
+        engine='text-davinci-002',  # 현재 Davinci 모델의 최신 버전(03.20 기준)
         prompt=question,
         temperature=0.1,
         max_tokens=4000,  # Codex가 답할 수 있는 최대 문장 바이트 수 (text-davinci-001의 경우 2048 Byte 였음)

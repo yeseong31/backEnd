@@ -50,6 +50,10 @@ class User(AbstractBaseUser):
                               unique=True, verbose_name='사용자 아이디')
     username = models.CharField(max_length=50, null=False, blank=False, verbose_name='사용자 이름')
     email = models.EmailField(verbose_name='이메일', max_length=255, unique=True, null=False, blank=False)
+    temperature = models.FloatField(max_length=10,
+                                    verbose_name='코덱스온도',
+                                    null=True, blank=True,
+                                    default=0.1)    # 사용자 별 최적의 코덱스 온도 설정을 위함
     # 아래 두 개의 필드는 Django의 User Model을 구성할 때 필수로 요구되는 항목
     is_active = models.BooleanField(default=True)  # 이메일 인증 시 활용되는 속성
     is_admin = models.BooleanField(default=False)
