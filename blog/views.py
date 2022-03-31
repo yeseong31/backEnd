@@ -43,7 +43,7 @@ class IndexView(View):
         else:
             return JsonResponse({'message': 'The user id does not exist.', 'status': 400}, status=400)
 
-    # Codex 기능 수행 함수 (프론트엔드와 연동되는 실질적인 기능 담당)
+    # Codex 기능 수행 함수 (프론트엔드와 연동되어 실질적인 기능 수행)
     def post(self, request):
         request = json.loads(request.body)
         question = request['question']
