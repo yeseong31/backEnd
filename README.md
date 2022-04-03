@@ -13,13 +13,13 @@ kodeal web page using django<br/>
 ### Pre-requisites
 * 먼저 백엔드 개발에 필요한 Python 패키지를 다운로드 한다.
 
-1. 본 GitHub Repository의 내용을 Clone한다.
+#### 1. 본 GitHub Repository의 내용을 Clone한다.
 
   ```
   git clone https://github.com/yeseong31/backEnd.git
   ```
 
-2. 가상 환경을 구축한다.
+#### 2. 가상 환경을 구축한다.
 
   * 가상 환경을 만들 디렉터리로 이동한 뒤 다음의 명령어로 Python 가상 환경을 실행한다.
   
