@@ -13,20 +13,26 @@ kodeal web page using django<br/>
 ### Pre-requisites
 * 먼저 백엔드 개발에 필요한 Python 패키지를 다운로드 한다.
 
-#### 1. 본 GitHub Repository의 내용을 Clone한다.
-
-  ```
-  git clone https://github.com/yeseong31/backEnd.git
-  ```
-
-#### 2. 가상 환경을 구축한다.
-
-  * 가상 환경을 만들 디렉터리로 이동한 뒤 다음의 명령어로 Python 가상 환경을 실행한다.
+#### 1. 가상 환경 작업
+  * 가상 환경을 만들 디렉터리로 이동한 뒤 **cmd 환경**에서 다음의 명령어로 Python 가상 환경을 실행한다.
+  * 아래의 명령어는 가상 환경의 이름을 kodeal로 설정했을 때의 예시이다.
   
+  ```cmd
+  python -m venv kodeal
+  cd kodeal/Scripts
+  activate
   ```
-  python -m venv [가상환경이름]
-  ```
+  
+#### 2. Django 설치
+  * 가상 환경에 진입한 상태에서 `pip install django==3.1.14` 명령으로 Django를 설치한다.
+  * 경고 메시지가 출력된다면 `python -m pip install --upgrade pip` 명령으로 pip를 최신 버전으로 한 후 다시 시도한다.
 
+#### 3. Django 프로젝트 생성
+  * 프로젝트를 생성할 위치로 이동하여 다음의 명령으로 Django 프로젝트를 생성한다.
+
+  ```cmd
+  django-admin startproject config .
+  ```
 
 ## 🏠 Home Page
 <img width="1280" alt="image" src="https://user-images.githubusercontent.com/66625672/155848689-05d9ba0f-559b-4409-95d5-2a5f18905761.png">
