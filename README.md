@@ -41,10 +41,15 @@ kodeal web page using django<br/>
 
 ---
 
-# 
+## Service Flow Chart
+![image](https://user-images.githubusercontent.com/66625672/161430423-24ca87f0-f526-4441-a7b7-eb92199d6af8.png)
+
+---
 
 ## 💾 Database
 ![image](https://user-images.githubusercontent.com/66625672/161067175-31f69497-c250-49c7-88cc-5a7734b396cc.png)
+
+---
 
 ## License
 이 문서는 **한국공학대학교 컴퓨터공학부**의 **"종합설계"** 교과목에서
@@ -52,10 +57,14 @@ kodeal web page using django<br/>
 S2-1(김정현, 권종석, 한민, 한예성)에 의해 작성된 것으로,
 본 프로젝트를 사용하기 위해서는 팀원들의 허락이 필요합니다.
 
+---
+
 ## 🙋 Contributor
 * [jongseok Kwon](https://github.com/himJJong) <br>
 * [Min](https://github.com/Proals) <br>
 * [yeseong31](https://github.com/yeseong31) <br>
+
+---
 
 ## 📫 Contacts
 * [![Gmail Badge](https://img.shields.io/badge/kodealtest@gmail.com-d14836?style=flat-square&logo=Gmail&logoColor=white&link=mailto:kodealtest@gmail.com)](mailto:kodealtest@gmail.com)
