@@ -84,7 +84,7 @@ S2-1(김정현, 권종석, 한민, 한예성)에 의해 작성된 것으로,
 ## 🙋 Contributor
 * [jongseok Kwon](https://github.com/himJJong) <br>
 * [Min](https://github.com/Proals) <br>
-* [yeseong31](https://github.com/yeseong31) <br>
+* [yeseong31](https://github.com/yeseong31) [![Naver Badge](https://img.shields.io/badge/yeseong31@naver.com-04ce5c?style=flat-square&logo=Naver&logoColor=white&link=mailto:yeseong31@Naver.com)](mailto:yeseong31@naver.com)<br>
 
 ## 📫 Contacts
 * [![Gmail Badge](https://img.shields.io/badge/kodealtest@gmail.com-d14836?style=flat-square&logo=Gmail&logoColor=white&link=mailto:kodealtest@gmail.com)](mailto:kodealtest@gmail.com)
