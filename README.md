@@ -33,6 +33,18 @@ kodeal web page using django<br/>
   ```cmd
   django-admin startproject config .
   ```
+  
+#### 4. Pycharm으로 Django 프로젝트 실행
+  * Pycharm으로 해당 Django 프로젝트를 연 뒤, **Python Interpreter 설정**을 **가상환경의 Python**으로 설정한다.
+
+#### 5. GitHub Clone
+  * 다음의 명령으로 본 프로젝트(백엔드)의 내용을 가져온다.
+
+  ```git
+  git clone https://github.com/yeseong31/backEnd.git
+  ```
+  
+  * 프로젝트 내 config/my_settings.py 파일을 새로 생성하여 [다음의 Wiki 내용을 참고](https://github.com/yeseong31/Itrencotech-web-page/wiki/my_settings.py-%EC%84%A4%EC%A0%95)하여 설정값을 구성한다.
 
 ## 🏠 Home Page
 <img width="1280" alt="image" src="https://user-images.githubusercontent.com/66625672/155848689-05d9ba0f-559b-4409-95d5-2a5f18905761.png">
