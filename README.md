@@ -3,10 +3,9 @@
 ![MariaDB: Version](https://img.shields.io/badge/MariaDB-10.3.32-blue)
 
 # kodeal backEnd
-## 2022 컴퓨터공학부 종합설계 백엔드
+### 2022 컴퓨터공학부 종합설계 S2-1 백엔드
 
 kodeal web page using django<br/>
--
 <b>This Project service is to teach python language for coding beginner</b>
 
 ---
