@@ -50,7 +50,6 @@ kodeal web page using django<br/>
 <img width="1280" alt="image" src="https://user-images.githubusercontent.com/66625672/155848689-05d9ba0f-559b-4409-95d5-2a5f18905761.png">
 
 ## 🛠️ Built With
-* ![React](https://img.shields.io/badge/React-61DAFB.svg?style=flat-square&logo=React&logoColor=black)
 * ![Python](https://img.shields.io/badge/Python-3776AB.svg?style=flat-square&logo=Python&logoColor=white)
 * ![Django](https://img.shields.io/badge/Django-092E20.svg?style=flat-square&logo=Django&logoColor=white)
 * ![MariaDB](https://img.shields.io/badge/MariaDB-003545.svg?style=flat-square&logo=MariaDB&logoColor=white)
