@@ -161,7 +161,7 @@ def qna_main(request):
         # 테스트 데이터 삽입
         user = Login_User.objects.get(userid='testid')
         friend = User(question=question,
-                      papago=translate_question,
+                      question_papago=translate_question,
                       code=answer,
                       userid=user,
                       star=5.0,
