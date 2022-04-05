@@ -1,4 +1,4 @@
-![Python: Version](https://img.shields.io/badge/python-3.9.9-blue)
+![Python: Version](https://img.shields.io/badge/python-3.8.10-blue)
 ![Django: Version](https://img.shields.io/badge/Django-3.1.14-blue)
 ![MariaDB: Version](https://img.shields.io/badge/MariaDB-10.3.32-blue)
 

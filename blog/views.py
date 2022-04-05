@@ -49,7 +49,8 @@ class IndexView(View):
 
         # 한글로 입력된 문장을 Papago API를 통해 번역 수행
         # 파이썬 분야에 대한 질문에 한정하기 위해 'Python 3' 문장 삽입
-        pre_question = 'Python 3' + '\n' + papago(question) + 'with code'
+        translate_question = papago(question)
+        pre_question = 'Python 3' + '\n' + translate_question + 'with code'
 
         # OpenAI Codex의 반환값 전체를 받아옴
         response = question_to_response(pre_question)
@@ -60,7 +61,12 @@ class IndexView(View):
         if Login_User.objects.filter(userid=userid).exists():
             user = Login_User.objects.get(userid=userid)
 
-            friend = User(question=question, code=answer, userid=user)
+            friend = User(question=question,
+                          question_papago=translate_question,
+                          code=answer,
+                          userid=user,
+                          star=5.0,
+                          language='Python 3')
             friend.save()
 
             return JsonResponse({'answer': answer, 'status': 200}, status=200)
@@ -159,7 +165,7 @@ def qna_main(request):
         # 테스트 데이터 삽입
         user = Login_User.objects.get(userid='testid')
         friend = User(question=question,
-                      papago=translate_question,
+                      question_papago=translate_question,
                       code=answer,
                       userid=user,
                       star=5.0,
