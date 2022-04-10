@@ -27,8 +27,6 @@ openai.Engine.list()
 class IndexView(View):
     def get(self, request):
         # 로그인 한 사용자인지 확인
-        # data = json.loads(request.body)
-        # userid = data['userid']
         userid = request.GET.get('userid')
 
         if Login_User.objects.filter(userid=userid).exists():
@@ -185,7 +183,7 @@ def question_to_response(question):
     response = openai.Completion.create(
         engine='text-davinci-002',  # 현재 Davinci 모델의 최신 버전(03.20 기준)
         prompt=question,
-        temperature=0.1,
+        temperature=0.7,
         max_tokens=4000,  # Codex가 답할 수 있는 최대 문장 바이트 수 (text-davinci-001의 경우 2048 Byte 였음)
         top_p=1,
         frequency_penalty=0,
