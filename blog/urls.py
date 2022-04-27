@@ -14,6 +14,9 @@ urlpatterns = [
     # QnA화면
     path('qna_main/', views.qna_main, name='qna_main'),
     path('qna_answer/', views.qna_answer, name='qna_answer'),
+
+    # Question read page
+    path('read/', views.read, name='read'),
 ]
 
 router = routers.DefaultRouter()

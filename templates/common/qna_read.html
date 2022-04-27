@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container my-3">
+    <h1>Question Read Page</h1>
+
+    <!-- 오류 표시 -->
+    {% include 'form_errors.html' %}
+
+    <!-- 게시글 내용 -->
+    <div class="form-group">
+        <label>ID</label>
+        <input type="text" class="form-control" name="id" value="{{ question.id }}" readonly>
+    </div>
+
+    <div class="form-group">
+        <label>Question</label>
+        <input type="text" class="form-control" name="title" value="{{ question.question }}" readonly>
+    </div>
+
+    <div class="form-group">
+        <label>Papago says...</label>
+        <input type="text" class="form-control" name="title" value="{{ question.question_papago }}" readonly>
+    </div>
+
+    <div class="form-group">
+        <label>Code</label>
+        <textarea class="form-control" name="content" rows="20" readonly>{{ question.code }}</textarea>
+    </div>
+
+    <div class="form-group">
+        <label>UserID</label>
+        <input type="text" class="form-control" name="writer" value="{{ question.userid }}" readonly>
+    </div>
+
+    <div class="form-group">
+        <label>Time</label>
+        <input type="text" class="form-control" name="regDate"
+               value="{{ question.time.date }} {{ question.time.time }}" readonly>
+    </div>
+
+    <div style="height: 20px;">
+
+    </div>
+
+    <!-- 목록 -->
+    <a href="{% url 'blog:qna_main' %}?page={{ page }}">
+        <button type="button" class="btn btn-info">List</button>
+    </a>
+
+</div>
+{% endblock %}

@@ -1,8 +1,10 @@
 # coding: utf-8
+import math
 import ssl
 import urllib
 import urllib.request
 
+from django.core.paginator import Paginator
 from django.views import View
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render
@@ -174,7 +176,27 @@ def qna_main(request):
 
         return render(request, 'common/qna_answer.html', {'answer': answer})
     else:
-        return render(request, 'common/qna_main.html')
+        page = '1' if request.GET.get('page') is None else request.GET.get('page')
+        question_list = User.objects.order_by('-time').all()
+
+        # 페이징
+        paginator = Paginator(question_list, 10)
+        page_obj = paginator.get_page(page)
+
+        # 시작 번호
+        temp_end = int(math.ceil(page_obj.number / 10.0)) * 10
+        start = temp_end - 9
+        # 끝 번호
+        total_page = math.ceil(len(question_list) / 10)
+        end = temp_end if total_page > temp_end else total_page
+
+        context = {'question_list': page_obj,
+                   'start': start,
+                   'end': end,
+                   'total_page': total_page,
+                   'page': page}
+
+        return render(request, 'common/qna_main.html', context)
 
 
 # blog의 question을 전달 받아 codex 답변(OpenAIObject 객체)을 return
@@ -237,3 +259,14 @@ def remove_unnecessary_char(sentence):
     sentence = remove_first_colon(sentence)
     sentence = remove_two_newline_char(sentence)
     return sentence
+
+
+# Question Read Page (04/27)
+def read(request):
+    if request.method == 'GET':
+        id = request.GET.get('id')
+        page = request.GET.get('page')
+        question = get_object_or_404(User, pk=id)
+
+        context = {'question': question, 'page': page}
+        return render(request, 'common/qna_read.html', context)
