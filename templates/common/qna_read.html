@@ -24,7 +24,7 @@
 
     <div class="form-group">
         <label>Code</label>
-        <textarea class="form-control" name="content" rows="5" readonly>{{ question.code }}</textarea>
+        <textarea class="form-control" name="content" rows="20" readonly>{{ question.code }}</textarea>
     </div>
 
     <div class="form-group">
@@ -36,6 +36,10 @@
         <label>Time</label>
         <input type="text" class="form-control" name="regDate"
                value="{{ question.time.date }} {{ question.time.time }}" readonly>
+    </div>
+
+    <div style="height: 20px;">
+
     </div>
 
     <!-- 목록 -->
