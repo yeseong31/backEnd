@@ -68,7 +68,8 @@ class IndexView(View):
                           code=answer,
                           userid=user,
                           star=5.0,
-                          language='Python 3')
+                          language='Python 3',
+                          preprocess=response)
             friend.save()
 
             return JsonResponse({'answer': answer, 'status': 200}, status=200)
@@ -171,7 +172,8 @@ def qna_main(request):
                       code=answer,
                       userid=user,
                       star=5.0,
-                      language='Python 3')
+                      language='Python 3',
+                      preprocess=response)
         friend.save()
 
         return render(request, 'common/qna_answer.html', {'answer': answer})
