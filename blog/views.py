@@ -174,6 +174,7 @@ def qna_main(request):
                       star=5.0,
                       language='Python 3',
                       preprocess=response)
+
         friend.save()
 
         return render(request, 'common/qna_answer.html', {'answer': answer})
