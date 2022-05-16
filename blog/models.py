@@ -15,6 +15,7 @@ class User(models.Model):
     time = models.DateTimeField(verbose_name='작성일', help_text="time", auto_now_add=True)
     star = models.FloatField(verbose_name='별점', null=True, blank=True, default=5.0)
     language = models.CharField(max_length=100, verbose_name='사용언어', null=True, blank=True, default='Python 3')
+    preprocess = models.CharField(max_length=2000, verbose_name='전저리 전 Codex 반환값', null=True, blank=True, default='TEST')
 
 
 class Entry(models.Model):

@@ -18,6 +18,11 @@
     </div>
 
     <div class="form-group">
+        <label>Pre-process...</label>
+        <textarea class="form-control" name="content" rows="20" readonly>{{ question.preprocess }}</textarea>
+    </div>
+
+    <div class="form-group">
         <label>Papago says...</label>
         <input type="text" class="form-control" name="title" value="{{ question.question_papago }}" readonly>
     </div>
