@@ -21,7 +21,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     # path('home/', include('kodeal.urls')),
     # path('', RedirectView.as_view(url='/home/', permanent=True)),
-    path('', include('kodeal.urls')),
     path('home/', RedirectView.as_view(url='/', permanent=True)),
     path('common/', include('common.urls')),  # common(login)
     path('google/', include('allauth.urls')),  # common(google login)
