@@ -25,8 +25,8 @@ SECRET_KEY = my_settings.SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = True
-# DEBUG = bool(os.environ.get('DJANGO_DEBUG', True))
-DEBUG = False
+DEBUG = bool(os.environ.get('DJANGO_DEBUG', True))
+# DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 

@@ -33,9 +33,9 @@
         {% if question_list %}
             {% for question in question_list %}
             <tr>
-                <td>{{ question.id }}</td>
+                <td>{{ question.qid }}</td>
                 <td>
-                    <a href="{% url 'blog:read' %}?id={{ question.id }}&page={{ page }}">
+                    <a href="{% url 'blog:read' %}?id={{ question.qid }}&page={{ page }}">
                         {{ question.question }}
                     </a>
                 </td>
