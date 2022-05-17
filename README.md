@@ -75,7 +75,7 @@ kodeal web page using django<br/>
 ![image](https://user-images.githubusercontent.com/66625672/161430423-24ca87f0-f526-4441-a7b7-eb92199d6af8.png)
 
 ## 💾 Database
-![image](https://user-images.githubusercontent.com/66625672/161067175-31f69497-c250-49c7-88cc-5a7734b396cc.png)
+<img width="891" alt="image" src="https://user-images.githubusercontent.com/66625672/168822348-6a0cdac3-949f-48ba-99ea-d04f1b3b441f.png">
 
 ## License
 이 문서는 **한국공학대학교 컴퓨터공학부**의 **"종합설계"** 교과목에서
