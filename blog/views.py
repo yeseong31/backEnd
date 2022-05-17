@@ -267,9 +267,9 @@ def remove_unnecessary_char(sentence):
 # Question Read Page (04/27)
 def read(request):
     if request.method == 'GET':
-        id = request.GET.get('id')
+        qid = request.GET.get('id')
         page = request.GET.get('page')
-        question = get_object_or_404(User, pk=id)
+        question = get_object_or_404(User, pk=qid)
 
         context = {'question': question, 'page': page}
         return render(request, 'common/qna_read.html', context)
