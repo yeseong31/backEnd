@@ -85,13 +85,13 @@ class SignupView(View):
 # 로그인
 class LoginView(View):
     def post(self, request):
-        data = json.loads(request.body)
-        userid = data['userid']
-        password = data['password']
-        keep_login = data['keep_login']
-        # userid = request.POST['userid']
-        # password = request.POST['password']
-        # keep_login = request.POST['keep_login']
+        # data = json.loads(request.body)
+        # userid = data['userid']
+        # password = data['password']
+        # keep_login = data['keep_login']
+        userid = request.POST['userid']
+        password = request.POST['password']
+        keep_login = request.POST['keep_login']
 
         # 사용자가 로그인 화면에서 뒤로가기를 포함한 동작을 수행하면 강제 로그아웃
         if request.COOKIES.get('userid') is not None:
@@ -131,6 +131,7 @@ class LoginView(View):
             return JsonResponse({'message': 'INVALID_KEYS', 'status': 400}, status=400)
 
     def get(self, request):
+        # return render(request, 'common/login.html')
         return JsonResponse({'message': "Go to... '/login'", 'status': 200}, status=200)
 
 
