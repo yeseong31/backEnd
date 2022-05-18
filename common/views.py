@@ -9,7 +9,7 @@ from django.views import View
 from config.settings import MINUTE
 from .mail import email_auth_num
 
-from common.models import User, UserAuth
+from common.models import User, UserAuth, UserInfo
 from django.core.mail import EmailMessage
 
 
@@ -72,7 +72,14 @@ class SignupView(View):
             password=password1,
             email=email
         )
+        # 사용자 정보 생성
+        userinfo = UserInfo(
+            nickname=username,
+            temperature=0.1,  # 참고: Codex Temperature 기본 설정 0.7
+            userid=user
+        )
         user.save()
+        userinfo.save()
 
         # 이메일 인증 페이지로 이동
         return JsonResponse({'message': "Go to... '/common/signup/auth/email'", 'status': 200}, status=200)
