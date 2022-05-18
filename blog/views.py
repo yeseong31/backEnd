@@ -134,10 +134,10 @@ def qna_main(request):
         answer = extract_answer_sentences(response)
 
         # 답변 목록을 메모장으로 저장하여 문장 확인(테스트용 파일 생성)
-        with open('answer_test_file.txt', 'w') as f:
-            sentences = sent_tokenize(answer)
-            for sentence in sentences:
-                f.write(sentence + '\n')
+        # with open('answer_test_file.txt', 'w') as f:
+        #     sentences = sent_tokenize(answer)
+        #     for sentence in sentences:
+        #         f.write(sentence + '\n')
 
         # 테스트 데이터 삽입
         user = Login_User.objects.get(userid='testid')
