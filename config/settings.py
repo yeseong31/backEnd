@@ -58,6 +58,9 @@ INSTALLED_APPS = [
 
     # ssl
     'sslserver',
+
+    # mypage
+    'mypage.apps.MypageConfig',
 ]
 
 MIDDLEWARE = [

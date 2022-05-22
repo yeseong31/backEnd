@@ -5,7 +5,7 @@
 <h1 class="nav-h1">로그인 페이지</h1>
 
 <div>
-    <form method="post" class="post-form" action="{% url 'common:login_main' %}">
+    <form method="post" class="post-form" action="{% url 'common:login_main_test' %}">
         <!-- 보안을 위한 난수 생성기 -->
         {% csrf_token %}
         {% include "form_errors.html" %}

@@ -124,7 +124,7 @@ def index(request):
 
 # qna
 def qna_answer(request):
-    return render(request, 'common/qna_answer.html')
+    return render(request, 'qna/qna_answer.html')
 
 
 # keyward 05.22
@@ -209,7 +209,7 @@ def qna_main(request):
                    'total_page': total_page,
                    'page': page}
 
-        return render(request, 'common/qna_main.html', context)
+        return render(request, 'qna/qna_main.html', context)
 
 
 # blog의 question을 전달 받아 codex 답변(OpenAIObject 객체)을 return
@@ -236,4 +236,4 @@ def read(request):
         keyword = get_object_or_404(Keywords, qid=question)
 
         context = {'question': question, 'keyword': keyword, 'page': page}
-        return render(request, 'common/qna_read.html', context)
+        return render(request, 'qna/qna_read.html', context)

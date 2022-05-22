@@ -13,21 +13,33 @@
     <!-- 일반 로그인 -->
     <div class="nav-item" style="float:right; margin-right: 20px;">
         {% if not user.is_authenticated %}
-            <a href="{% url 'common:login_main' %}"><button>로그인</button></a>
+            <a href="{% url 'common:login_main_test' %}"><button>로그인</button></a>
         {% endif %}
-    </div>
-    <!-- QnA화면 진입 -->
-    <div class="nav-item" style="float:right; margin-right: 20px;">
-        <a href="{% url 'blog:qna_main' %}"><button>QnA</button></a>
     </div>
     <!-- 사용자 정보 및 로그아웃 -->
     <div class="nav-item" style="float:right; margin-right: 20px;">
         {% if user.is_authenticated %}
             <a href="javascript:{document.getElementById('logout').submit()}">{{ user.username }}님 (Logout)</a>
             <form id="logout" method="POST" action="{% url 'common:logout_main' %}">
-                {% csrf_token %} <input type="hidden" />
+                {% csrf_token %}
             </form>
         {% endif %}
     </div>
+    <!-- 마이페이지 진입 -->
+    {% if user.is_authenticated %}
+        <form method="post" action="{% url 'mypage:index' %}">
+            <input id="userid" name="userid"
+                   value="{{ user.userid|default_if_none:'' }}" hidden>
+            <div class="nav-item" style="float:right; margin-right: 20px;">
+                <button type="submit" id="mypage_btn">마이페이지</button>
+            </div>
+        </form>
+    {% endif %}
+    <!-- QnA화면 진입 -->
+    {% if user.is_authenticated %}
+        <div class="nav-item" style="float:right; margin-right: 20px;">
+            <a href="{% url 'blog:qna_main' %}"><button>QnA</button></a>
+        </div>
+    {% endif %}
 </div>
 

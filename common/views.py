@@ -96,9 +96,6 @@ class LoginView(View):
         userid = data['userid']
         password = data['password']
         keep_login = data['keep_login']
-        # userid = request.POST['userid']
-        # password = request.POST['password']
-        # keep_login = request.POST['keep_login']
 
         # 사용자가 로그인 화면에서 뒤로가기를 포함한 동작을 수행하면 강제 로그아웃
         if request.COOKIES.get('userid') is not None:
@@ -127,11 +124,7 @@ class LoginView(View):
                     if keep_login == 'True':
                         response.set_cookie('userid', userid, max_age=MINUTE * 60)
                         response.set_cookie('username', user.username.encode('utf-8'), max_age=MINUTE * 60)
-
                     return response
-
-                    # auth.login(request, user)
-                    # return redirect('/')
 
                 # 그렇지 않다면 400 Error
                 return JsonResponse({'message': "Enter invalid authentication information", 'status': 401}, status=401)
@@ -141,7 +134,6 @@ class LoginView(View):
             return JsonResponse({'message': 'INVALID_KEYS', 'status': 400}, status=400)
 
     def get(self, request):
-        # return render(request, 'common/login.html')
         return JsonResponse({'message': "Go to... '/login'", 'status': 200}, status=200)
 
 
@@ -218,3 +210,42 @@ def auth_email_complete(request):
 # 회원가입 완료 페이지
 def signup_complete(request):
     return JsonResponse({'message': "signup complete.", 'status': 200}, status=200)
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# 백엔드 로그인
+class LoginTestView(View):
+    def post(self, request):
+        userid = request.POST['userid']
+        password = request.POST['password']
+        keep_login = request.POST['keep_login']
+
+        # 사용자가 로그인 화면에서 뒤로가기를 포함한 동작을 수행하면 강제 로그아웃
+        if request.COOKIES.get('userid') is not None:
+            response = JsonResponse({'message': "Go to... '/login'", 'status': 200}, status=200)
+            response.delete_cookie('userid')
+            response.delete_cookie('username')
+            auth.logout(request)
+            return response
+
+        try:
+            # 해당 아이디의 사용자가 존재한다면
+            if User.objects.filter(userid=userid).exists():
+                user = User.objects.get(userid=userid)
+                # 입력한 비밀번호가 사용자의 비밀번호와 일치한다면
+                if user.check_password(password):
+                    # 로그인 완료
+                    auth.login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+
+                    # auth.login(request, user)
+                    return redirect('/')
+
+                # 그렇지 않다면 400 Error
+                return JsonResponse({'message': "Enter invalid authentication information", 'status': 401}, status=401)
+            else:
+                return JsonResponse({'message': "Bad Request", 'status': 400}, status=400)
+        except KeyError:
+            return JsonResponse({'message': 'INVALID_KEYS', 'status': 400}, status=400)
+
+    def get(self, request):
+        return render(request, 'common/login.html')
