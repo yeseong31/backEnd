@@ -27,9 +27,11 @@
     </div>
     <!-- 마이페이지 진입 -->
     {% if user.is_authenticated %}
-        <div class="nav-item" style="float:right; margin-right: 20px;">
-            <a href="{% url 'mypage:index' %}"><button>마이페이지</button></a>
-        </div>
+        <form method="post" action="{% url 'mypage:index' %}">
+            <div class="nav-item" style="float:right; margin-right: 20px;">
+                <button type="submit" id="mypage_btn">마이페이지</button>
+            </div>
+        </form>
     {% endif %}
     <!-- QnA화면 진입 -->
     {% if user.is_authenticated %}

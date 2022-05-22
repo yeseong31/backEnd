@@ -4,4 +4,5 @@ from django.shortcuts import render
 
 # Create your views here.
 def index(request):
-    return HttpResponse("마이페이지 테스트")
+    if request.method == 'POST':
+        return HttpResponse("마이페이지 테스트")
