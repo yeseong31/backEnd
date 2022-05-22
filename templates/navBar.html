@@ -26,12 +26,16 @@
         {% endif %}
     </div>
     <!-- 마이페이지 진입 -->
-    <div class="nav-item" style="float:right; margin-right: 20px;">
-        <a href="{% url 'mypage:index' %}"><button>마이페이지</button></a>
-    </div>
+    {% if user.is_authenticated %}
+        <div class="nav-item" style="float:right; margin-right: 20px;">
+            <a href="{% url 'mypage:index' %}"><button>마이페이지</button></a>
+        </div>
+    {% endif %}
     <!-- QnA화면 진입 -->
-    <div class="nav-item" style="float:right; margin-right: 20px;">
-        <a href="{% url 'blog:qna_main' %}"><button>QnA</button></a>
-    </div>
+    {% if user.is_authenticated %}
+        <div class="nav-item" style="float:right; margin-right: 20px;">
+            <a href="{% url 'blog:qna_main' %}"><button>QnA</button></a>
+        </div>
+    {% endif %}
 </div>
 
