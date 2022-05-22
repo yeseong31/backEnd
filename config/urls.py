@@ -24,4 +24,5 @@ urlpatterns = [
     path('common/', include('common.urls')),  # common(login)
     path('google/', include('allauth.urls')),  # common(google login)
     path('blog/', include('blog.urls')),    # kodeal page
+    path('mypage/', include('mypage.urls')),    # mypage
 ]
