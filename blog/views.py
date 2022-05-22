@@ -18,7 +18,7 @@ from kodeal.views import papago, extract_answer_sentences
 
 from .serializer import EntrySerializer
 from common.models import User as Login_User
-from blog.models import User, Entry
+from blog.models import User, Entry, Keywords
 
 from config import my_settings
 import openai
@@ -73,7 +73,16 @@ class IndexView(View):
                           preprocess=response)
             friend.save()
 
-            return JsonResponse({'answer': answer, 'status': 200}, status=200)
+            # 답변에서 키워드 추출
+            keyword_question = "Extract keywords from this text: " + answer
+            # OpenAI Codex의 반환값 전체를 받아옴
+            response = question_to_response(keyword_question)
+            # 반환값 중 질문에 대한 답변만 추출
+            keyword_answer = extract_answer_sentences(response)
+            # 키워드를 DB에 저장
+            Keywords(qid=friend, keyword=keyword_answer).save()
+
+            return JsonResponse({'answer': answer, 'keyword': keyword_answer, 'status': 200}, status=200)
         # 전달받은 아이디가 DB에 없으면 400 에러
         else:
             # 테스트 데이터 삽입
@@ -118,6 +127,24 @@ def qna_answer(request):
     return render(request, 'common/qna_answer.html')
 
 
+# keyward 05.22
+def key_word(request):
+    if request.method == 'POST':
+        question = request.POST['text_area']
+        translate_question = papago(question)
+
+        response = openai.Completion.create(
+            engine="text-davinci-002",
+            prompt=translate_question,
+            temperature=0.3,
+            max_tokens=60,
+            top_p=1.0,
+            frequency_penalty=0.8,
+            presence_penalty=0.0
+        )
+        return response
+
+
 # qna action (백엔드)
 def qna_main(request):
     if request.method == 'POST':
@@ -151,7 +178,16 @@ def qna_main(request):
 
         friend.save()
 
-        return render(request, 'common/qna_answer.html', {'answer': answer})
+        # 답변에서 키워드 추출
+        keyword_question = "Extract keywords from this text: " + answer
+        # OpenAI Codex의 반환값 전체를 받아옴
+        response = question_to_response(keyword_question)
+        # 반환값 중 질문에 대한 답변만 추출
+        keyword_answer = extract_answer_sentences(response)
+        # 키워드를 DB에 저장
+        Keywords(qid=friend, keyword=keyword_answer).save()
+
+        return render(request, 'common/qna_answer.html', {'answer': answer, 'keyword': keyword_answer})
     else:
         page = '1' if request.GET.get('page') is None else request.GET.get('page')
         question_list = User.objects.order_by('-time').all()
@@ -197,6 +233,7 @@ def read(request):
         qid = request.GET.get('id')
         page = request.GET.get('page')
         question = get_object_or_404(User, pk=qid)
+        keyword = get_object_or_404(Keywords, qid=question)
 
-        context = {'question': question, 'page': page}
+        context = {'question': question, 'keyword': keyword, 'page': page}
         return render(request, 'common/qna_read.html', context)

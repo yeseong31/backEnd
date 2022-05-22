@@ -2,7 +2,7 @@
 
 from rest_framework import serializers
 
-from .models import User, Entry
+from .models import User, Entry, Keywords
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -17,6 +17,3 @@ class EntrySerializer(serializers.ModelSerializer):
     class Meta:
         model = Entry
         fields = ('title', 'body', 'created_at', 'status', 'author')
-
-
-
