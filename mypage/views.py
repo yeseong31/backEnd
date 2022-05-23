@@ -62,5 +62,5 @@ def check_freq_keyword(user):
     for cnt in collections.Counter(keyword_list).most_common(10):
         result.append(list(cnt))
     # print(f'result = {result}')
-    return sorted(result)  # 키워드 빈도수, 사전순 정렬
+    return sorted(result, key=lambda x: x[1], reverse=True)  # 키워드 빈도수, 사전순 정렬
 
