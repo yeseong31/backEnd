@@ -51,4 +51,21 @@ class Keywords(models.Model):
         return self.qid
 
     class Meta:
-        db_table = 'keywords'
+        db_table = 'keyword'
+
+
+# 사용자 키워드 누적
+class KeywordCount(models.Model):
+    cid = models.AutoField(primary_key=True)
+    word = models.CharField(max_length=255, verbose_name='키워드단어')
+    cnt = models.IntegerField(verbose_name='등장횟수')
+    qid = models.ForeignKey(User, related_name="%(class)s_qid", on_delete=models.SET_DEFAULT,
+                            default=DELETED_USER, db_column='qid', verbose_name='질문 아이디')
+    userid = models.ForeignKey(Login_user, related_name="%(class)s_userid", on_delete=models.SET_DEFAULT,
+                               default=DELETED_USER, db_column='userid', verbose_name='사용자 아이디')
+
+    def __str__(self):
+        return self.cid
+
+    class Meta:
+        db_table = 'keyword_count'
