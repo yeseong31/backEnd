@@ -38,7 +38,7 @@ class IndexView(View):
             # 해당 userid에 대한 '질문 목록'을 넘겨줘야 함
             questions = User.objects.filter(userid=user).order_by('time')
             data = json.loads(serialize('json', questions))
-            return JsonResponse({'items': data, 'status': 200}, status=200)
+            return JsonResponse({'userid': userid, 'items': data, 'status': 200}, status=200)
 
         # 만약 서비스 이용자가 아니라면 400 error
         else:
@@ -79,8 +79,9 @@ class IndexView(View):
             response = question_to_response(keyword_question)
             # 반환값 중 질문에 대한 답변만 추출
             keyword_answer = extract_answer_sentences(response)
-            # 키워드를 DB에 저장
-            Keywords(qid=friend, keyword=keyword_answer).save()
+            # 키워드 각각을 DB에 저장
+            for keyword in separate_keywords_in_commas(keyword_answer):
+                Keywords(qid=friend, keyword=keyword, userid=user).save()
 
             return JsonResponse({'answer': answer, 'keyword': keyword_answer, 'status': 200}, status=200)
         # 전달받은 아이디가 DB에 없으면 400 에러
@@ -149,6 +150,7 @@ def key_word(request):
 def qna_main(request):
     if request.method == 'POST':
         question = request.POST['text_area']  # 질문 영역 (03.20 수정: user_text → question 으로 이름 변경)
+        userid = request.POST['userid']
 
         # 한글로 입력된 문장을 Papago API를 통해 번역 수행
         # 파이썬 분야에 대한 질문에 한정하기 위해 'Python 3' 문장 삽입
@@ -166,29 +168,31 @@ def qna_main(request):
         #     for sentence in sentences:
         #         f.write(sentence + '\n')
 
-        # 테스트 데이터 삽입
-        user = Login_User.objects.get(userid='testid')
-        friend = User(question=question,
-                      question_papago=translate_question,
-                      code=answer,
-                      userid=user,
-                      star=5.0,
-                      language='Python 3',
-                      preprocess=response)
+        # 전달 받은 아이디가 DB에 있으면
+        if Login_User.objects.filter(userid=userid).exists():
+            # 테스트 데이터 삽입
+            user = Login_User.objects.get(userid=userid)
+            friend = User(question=question,
+                          question_papago=translate_question,
+                          code=answer,
+                          userid=user,
+                          star=5.0,
+                          language='Python 3',
+                          preprocess=response)
 
-        friend.save()
+            friend.save()
 
-        # 답변에서 키워드 추출
-        keyword_question = "Extract keywords from this text: " + answer
-        # OpenAI Codex의 반환값 전체를 받아옴
-        response = question_to_response(keyword_question)
-        # 반환값 중 질문에 대한 답변만 추출
-        keyword_answer = extract_answer_sentences(response)
-        # 키워드 각각을 DB에 저장
-        for keyword in separate_keywords_in_commas(keyword_answer):
-            Keywords(qid=friend, keyword=keyword, userid=user).save()
+            # 답변에서 키워드 추출
+            keyword_question = "Extract keywords from this text: " + answer
+            # OpenAI Codex의 반환값 전체를 받아옴
+            response = question_to_response(keyword_question)
+            # 반환값 중 질문에 대한 답변만 추출
+            keyword_answer = extract_answer_sentences(response)
+            # 키워드 각각을 DB에 저장
+            for keyword in separate_keywords_in_commas(keyword_answer):
+                Keywords(qid=friend, keyword=keyword, userid=user).save()
 
-        return render(request, 'qna/qna_answer.html', {'answer': answer, 'keyword': keyword_answer})
+            return render(request, 'qna/qna_answer.html', {'answer': answer, 'keyword': keyword_answer})
     else:
         page = '1' if request.GET.get('page') is None else request.GET.get('page')
         question_list = User.objects.order_by('-time').all()
@@ -242,7 +246,6 @@ def read(request):
         qid = request.GET.get('id')
         page = request.GET.get('page')
         question = get_object_or_404(User, pk=qid)
-        keyword = get_object_or_404(Keywords, qid=question)
 
-        context = {'question': question, 'keyword': keyword, 'page': page}
+        context = {'question': question, 'page': page}
         return render(request, 'qna/qna_read.html', context)
