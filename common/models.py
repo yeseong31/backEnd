@@ -81,7 +81,7 @@ class User(AbstractBaseUser):
 
     # 실제 데이터베이스에서 보이는 테이블 이름 설정
     class Meta:
-        db_table = 'users'
+        db_table = 'user'
 
 
 class UserAuth(models.Model):
@@ -93,7 +93,7 @@ class UserAuth(models.Model):
         return self.id
 
     class Meta:
-        db_table = 'user_auths'
+        db_table = 'user_auth'
 
 
 # 사용자정보

@@ -23,7 +23,7 @@ class User(models.Model):
         return self.qid
 
     class Meta:
-        db_table = 'questions'
+        db_table = 'question'
 
 
 class Entry(models.Model):
