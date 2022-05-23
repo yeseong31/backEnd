@@ -23,7 +23,7 @@ class User(models.Model):
         return self.qid
 
     class Meta:
-        db_table = 'questions'
+        db_table = 'question'
 
 
 class Entry(models.Model):
@@ -43,12 +43,15 @@ class Entry(models.Model):
 
 # 키워드
 class Keywords(models.Model):
+    kid = models.AutoField(primary_key=True)
     qid = models.ForeignKey(User, related_name="%(class)s_qid", on_delete=models.SET_DEFAULT,
                             default=DELETED_USER, db_column='qid', verbose_name='질문 아이디')
     keyword = models.CharField(max_length=255, verbose_name='키워드')
+    userid = models.ForeignKey(Login_user, related_name="%(class)s_userid", on_delete=models.SET_DEFAULT,
+                               default=DELETED_USER, db_column='userid', verbose_name='사용자 아이디')
 
     def __str__(self):
         return self.qid
 
     class Meta:
-        db_table = 'keywords'
+        db_table = 'keyword'
