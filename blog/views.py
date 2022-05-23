@@ -184,10 +184,11 @@ def qna_main(request):
         response = question_to_response(keyword_question)
         # 반환값 중 질문에 대한 답변만 추출
         keyword_answer = extract_answer_sentences(response)
-        # 키워드를 DB에 저장
-        Keywords(qid=friend, keyword=keyword_answer).save()
+        # 키워드 각각을 DB에 저장
+        for keyword in separate_keywords_in_commas(keyword_answer):
+            Keywords(qid=friend, keyword=keyword, userid=user).save()
 
-        return render(request, 'common/qna_answer.html', {'answer': answer, 'keyword': keyword_answer})
+        return render(request, 'qna/qna_answer.html', {'answer': answer, 'keyword': keyword_answer})
     else:
         page = '1' if request.GET.get('page') is None else request.GET.get('page')
         question_list = User.objects.order_by('-time').all()
@@ -225,6 +226,14 @@ def question_to_response(question):
         presence_penalty=0
     )
     return response
+
+
+# 문장을 콤마(,) 단위로 쪼개어 키워드로 분리
+def separate_keywords_in_commas(keywords):
+    result = []
+    for keyword in keywords.split(','):
+        result.append(keyword.strip())
+    return result
 
 
 # Question Read Page (04/27)
