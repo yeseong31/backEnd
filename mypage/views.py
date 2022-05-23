@@ -35,7 +35,7 @@ def index(request):
                 'keywords': keyword_cnt_info
             }
 
-            # print(context)
+            print(f'context = {context}')
             # return render(request, 'mypage/index.html', context)
             return JsonResponse({'context': context, 'status': 200}, status=200)
 
@@ -58,11 +58,9 @@ def check_freq_keyword(user):
         target = keyword_obj.keyword
         keyword_list.append(target)
 
-    result = collections.Counter(keyword_list).most_common(10)
-    # print(result)
-    return result
+    result = []
+    for cnt in collections.Counter(keyword_list).most_common(10):
+        result.append(list(cnt))
+    # print(f'result = {result}')
+    return sorted(result)  # 키워드 빈도수, 사전순 정렬
 
-
-# 마이페이지에 사용자 키워드 통계 출력
-def calcul_user_keyword_statistics():
-    pass
