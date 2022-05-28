@@ -3,7 +3,7 @@
 
 {% block content %}
 <div class="container">
-    <form method="POST" action="{% url 'common:profileUpload' %}" enctype="multipart/form-data">
+    <form method="POST" action="{% url 'mypage:profileUpload' %}" enctype="multipart/form-data">
         {% csrf_token %}
         <div>
             <h2>이미지이름</h2>
@@ -18,4 +18,4 @@
         <input type="submit" class="btn btn-primary col-12" value="제출">
     </form>
 </div>
-{% endblock%}
+{% endblock %}

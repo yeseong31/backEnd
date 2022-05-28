@@ -213,33 +213,6 @@ def signup_complete(request):
     return JsonResponse({'message': "signup complete.", 'status': 200}, status=200)
 
 
-# 이미지 업로드
-def ProfileUpload(request):
-    if request.method == 'POST':
-        img = request.FILES['image']
-        img_name = request.POST['img_name']
-        userid = request.POST['userid']
-
-        print(f'img_name: {img_name}')
-
-        if User.objects.filter(userid=userid).exists():
-            user = User.objects.get(userid=userid)
-            profile_upload = Profile(
-                userid=user,
-                img=img
-            )
-            profile_upload.save()
-            return redirect('/common/profile')
-        else:
-            return JsonResponse({'message': "This User doesn't exist", 'status': 400}, status=400)
-    else:
-        profileForm = FileUploadForm
-        context = {
-            'profileUpload': profileForm,
-        }
-        return render(request, 'mypage/profile.html', context)
-
-
 # ---------------------------------------------------------------------------------------------------------------------
 # 백엔드 로그인
 class LoginTestView(View):

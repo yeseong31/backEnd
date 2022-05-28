@@ -1,10 +1,11 @@
 import collections
 
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 from blog.models import Keywords
 from blog.models import User as Question
+from common.forms import FileUploadForm
 from common.models import User, Profile
 
 
@@ -63,4 +64,31 @@ def check_freq_keyword(user):
         result.append(list(cnt))
     # print(f'result = {result}')
     return sorted(result, key=lambda x: x[1], reverse=True)  # 키워드 빈도수, 사전순 정렬
+
+
+# 이미지 업로드
+def ProfileUpload(request):
+    if request.method == 'POST':
+        img = request.FILES['image']
+        img_name = request.POST['img_name']
+        userid = request.POST['userid']
+
+        print(f'img_name: {img_name}')
+
+        if User.objects.filter(userid=userid).exists():
+            user = User.objects.get(userid=userid)
+            profile_upload = Profile(
+                userid=user,
+                img=img
+            )
+            profile_upload.save()
+            return redirect('/mypage/profile')
+        else:
+            return JsonResponse({'message': "This User doesn't exist", 'status': 400}, status=400)
+    else:
+        profileForm = FileUploadForm
+        context = {
+            'profileUpload': profileForm,
+        }
+        return render(request, 'mypage/profile.html', context)
 
