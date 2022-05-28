@@ -222,7 +222,7 @@ SESSION_COOKIE_AGE = MINUTE * 60  # 쿠키의 유효 기간 설정 (default: 2�
 
 AWS_ACCESS_KEY_ID = my_settings.AWS_ACCESS_KEY_ID
 AWS_SECRET_ACCESS_KEY = my_settings.AWS_SECRET_ACCESS_KEY
-AWS_REGION = 'ap-northeast-2'
+AWS_REGION = my_settings.AWS_REGION
 
 # S3 Storages
 AWS_STORAGE_BUCKET_NAME = my_settings.AWS_STORAGE_BUCKET_NAME
