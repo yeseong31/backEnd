@@ -1,5 +1,7 @@
+from django.conf.urls.static import static
 from django.urls import path
 
+from config import settings
 from .views import *
 
 app_name = 'common'
@@ -23,4 +25,8 @@ urlpatterns = [
     # 이메일 인증번호 확인
     path('signup/auth/email/', EmailAuth.as_view(), name='auth_email'),
     path('signup/auth/email/comp/', EmailAuthComplete.as_view(), name='auth_email_complete'),
-]
+
+    # 이미지 등록
+    path('profile/', ProfileUpload, name="profileUpload"),
+
+] + static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)

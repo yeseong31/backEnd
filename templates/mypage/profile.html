@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <form method="POST" action="{% url 'common:profileUpload' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div>
+            <h2>이미지이름</h2>
+            <input type="text" name="img_name" id="img_name">
+        </div>
+        <div>
+            <h2>이미지</h2>
+            <input type="file" name="image" id="image">
+        </div>
+        <input id="userid" name="userid"
+                   value="{{ user.userid|default_if_none:'' }}" hidden>
+        <input type="submit" class="btn btn-primary col-12" value="제출">
+    </form>
+</div>
+{% endblock%}
