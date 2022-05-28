@@ -1,4 +1,5 @@
 import collections
+import json
 
 import boto3
 from botocore.config import Config
@@ -30,9 +31,15 @@ def index(request):
             keyword_cnt_info = check_freq_keyword(user)
 
             # 마이페이지에 대한 정보(이미지)가 있다면
-            path = None
+            img = None
             if Profile.objects.filter(userid=userid).exists():
-                path = Profile.objects.get(userid=userid).path
+                # S3에 저장된 이미지의 경로
+                path = json.dumps(str(Profile.objects.get(userid=userid).img))
+                # print(f'path: {path}')
+                #
+                # # 해당 경로로부터 프로필 이미지 다운로드
+                # client = boto3.client('s3')
+                # client.download_file(my_settings.AWS_STORAGE_BUCKET_NAME, path, '배경화면-지구.jpg')
 
             context = {
                 'image': path,
