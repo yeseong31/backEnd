@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'sslserver',
 
     # mypage
+    'storages',
     'mypage.apps.MypageConfig',
 ]
 
@@ -140,7 +141,8 @@ STATICFILES_DIRS = [
 ]
 
 # 미디어 파일을 관리할 root media directory
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'path/to/store/my/files/')
 MEDIA_URL = '/media/'
 
 # 로그인이 성공한 뒤 이동 URL
@@ -217,3 +219,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MINUTE = 60
 SESSION_COOKIE_AGE = MINUTE * 60  # 쿠키의 유효 기간 설정 (default: 2주)
 # SESSION_SAVE_EVERY_REQUEST = True   # 서버에게 Request를 보내면 시간 초기화
+
+AWS_ACCESS_KEY_ID = my_settings.AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY = my_settings.AWS_SECRET_ACCESS_KEY
+AWS_REGION = 'ap-northeast-2'
+
+# S3 Storages
+AWS_STORAGE_BUCKET_NAME = my_settings.AWS_STORAGE_BUCKET_NAME
+AWS_S3_CUSTOM_DOMAIN = my_settings.AWS_S3_CUSTOM_DOMAIN
+AWS_S3_OBJECT_PARAMETERS = my_settings.AWS_S3_OBJECT_PARAMETERS
+DEFAULT_FILE_STORAGE = my_settings.DEFAULT_FILE_STORAGE
