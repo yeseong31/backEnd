@@ -23,4 +23,5 @@ urlpatterns = [
     # 이메일 인증번호 확인
     path('signup/auth/email/', EmailAuth.as_view(), name='auth_email'),
     path('signup/auth/email/comp/', EmailAuthComplete.as_view(), name='auth_email_complete'),
+
 ]

@@ -5,7 +5,7 @@ common/forms.py
 from django import forms
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 
-from .models import User
+from .models import User, Profile
 
 
 # 사용자 생성 Form
@@ -45,3 +45,11 @@ class UserChangeForm(forms.ModelForm):
 
     def clean_password(self):
         return self.initial["password"]
+
+
+# 이미지(파일) 폼
+class FileUploadForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['inum', 'img', 'userid']
+

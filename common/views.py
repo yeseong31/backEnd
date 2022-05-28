@@ -7,9 +7,10 @@ from django.shortcuts import render, redirect
 from django.views import View
 
 from config.settings import MINUTE
+from .forms import FileUploadForm
 from .mail import email_auth_num
 
-from common.models import User, UserAuth, UserInfo
+from common.models import User, UserAuth, UserInfo, Profile
 from django.core.mail import EmailMessage
 
 

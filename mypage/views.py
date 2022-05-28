@@ -1,11 +1,20 @@
 import collections
+import json
 
+import boto3
+from botocore.config import Config
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from blog.models import Keywords
 from blog.models import User as Question
+from common.forms import FileUploadForm
 from common.models import User, Profile
+from config import my_settings
+from mypage.serializers import ProfileSerializer
 
 
 def index(request):
@@ -22,9 +31,15 @@ def index(request):
             keyword_cnt_info = check_freq_keyword(user)
 
             # 마이페이지에 대한 정보(이미지)가 있다면
-            path = None
+            img = None
             if Profile.objects.filter(userid=userid).exists():
-                path = Profile.objects.get(userid=userid).path
+                # S3에 저장된 이미지의 경로
+                path = json.dumps(str(Profile.objects.get(userid=userid).img))
+                # print(f'path: {path}')
+                #
+                # # 해당 경로로부터 프로필 이미지 다운로드
+                # client = boto3.client('s3')
+                # client.download_file(my_settings.AWS_STORAGE_BUCKET_NAME, path, '배경화면-지구.jpg')
 
             context = {
                 'image': path,
@@ -64,3 +79,52 @@ def check_freq_keyword(user):
     # print(f'result = {result}')
     return sorted(result, key=lambda x: x[1], reverse=True)  # 키워드 빈도수, 사전순 정렬
 
+
+# 이미지 업로드
+def ProfileUpload(request):
+    if request.method == 'POST':
+        img = request.FILES['image']
+        img_name = request.POST['img_name']
+        userid = request.POST['userid']
+
+        print(f'img_name: {img_name}')
+
+        if User.objects.filter(userid=userid).exists():
+            user = User.objects.get(userid=userid)
+
+            profile_upload = Profile(
+                userid=user,
+                img=img
+            )
+            profile_upload.save()
+
+            # Amazon S3에 이미지 등록
+            try:
+                s3 = boto3.resource(
+                    's3',
+                    aws_access_key_id=my_settings.AWS_ACCESS_KEY_ID,
+                    aws_secret_access_key=my_settings.AWS_SECRET_ACCESS_KEY,
+                    config=Config(signature_version='s3v4')
+                )
+                s3.Bucket(my_settings.AWS_STORAGE_BUCKET_NAME) \
+                    .put_object(Key=img_name, Body=img, ContentType='image/jpg')
+            except:
+                print('S3 ERROR')
+
+            return redirect('/mypage/profile')
+        else:
+            return JsonResponse({'message': "This User doesn't exist", 'status': 400}, status=400)
+    else:
+        profileForm = FileUploadForm
+        context = {
+            'profileUpload': profileForm,
+        }
+        return render(request, 'mypage/profile.html', context)
+
+# class Image(APIView):
+#     def post(self, request, format=None):
+#         serializers = ProfileSerializer(data=request.data)
+#         if serializers.is_valid():
+#             serializers.save()
+#             return Response(serializers.data, status=status.HTTP_201_CREATED)
+#         return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)

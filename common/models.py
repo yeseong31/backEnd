@@ -2,6 +2,7 @@
 common/models.py
 - Custom User Model 구현
 """
+import uuid as uuid
 from django.db import models
 from django.contrib.auth.models import (BaseUserManager, AbstractBaseUser)
 
@@ -113,17 +114,17 @@ class UserInfo(models.Model):
         db_table = 'user_info'
 
 
-# 프로필
+# 프로필 이미지
 class Profile(models.Model):
     inum = models.AutoField(primary_key=True)
-    img_name = models.CharField(max_length=255, verbose_name='이미지이름')
-    path = models.CharField(max_length=255, verbose_name='이미지경로', unique=True)
-    uuid = models.CharField(max_length=255, verbose_name='UUID', unique=True)
-    userid = models.ForeignKey(User, related_name="%(class)s_userid", on_delete=models.SET_DEFAULT,
+    img = models.ImageField(upload_to='images/%Y/%m/%d/', verbose_name='이미지', blank=True, null=True)
+    uuid = models.UUIDField(unique=True, default=uuid.uuid4, verbose_name='UUID')
+    userid = models.ForeignKey(User, on_delete=models.SET_DEFAULT,
                                default=DELETED_USER, db_column='userid', verbose_name='사용자 아이디')
 
     def __str__(self):
         return self.inum
 
     class Meta:
-        db_table = 'profile'
+        db_table = 'image'
+
