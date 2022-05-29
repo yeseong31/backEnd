@@ -81,7 +81,7 @@ def check_freq_keyword(user):
 
 
 # 이미지 업로드
-def ProfileUpload(request):
+def image_upload(request):
     if request.method == 'POST':
         img = request.FILES['image']
         img_name = request.POST['img_name']
@@ -92,13 +92,33 @@ def ProfileUpload(request):
         if User.objects.filter(userid=userid).exists():
             user = User.objects.get(userid=userid)
 
+            # 이미 등록된 이미지가 있다면
+            if Profile.objects.filter(userid=userid).exists():
+                # DB에 존재하는 이미지 Get
+                target = Profile.objects.get(userid=userid)
+
+                # S3 Bucket에 존재하는 이미지 삭제
+                s3_client = boto3.client(
+                    's3',
+                    aws_access_key_id=my_settings.AWS_ACCESS_KEY_ID,
+                    aws_secret_access_key=my_settings.AWS_SECRET_ACCESS_KEY,
+                )
+                s3_client.delete_object(
+                    Bucket=my_settings.AWS_STORAGE_BUCKET_NAME,
+                    Key=target.img    # 이미지 객체가 아니라 문자열이라서 에러 발생..
+                )
+
+                # DB에 존재하는 이미지 삭제
+                target.delete()
+
+            # 새로운 이미지 등록
             profile_upload = Profile(
                 userid=user,
                 img=img
             )
             profile_upload.save()
 
-            # Amazon S3에 이미지 등록
+            # Amazon S3 Bucket에 이미지 저장
             try:
                 s3 = boto3.resource(
                     's3',
@@ -109,15 +129,16 @@ def ProfileUpload(request):
                 s3.Bucket(my_settings.AWS_STORAGE_BUCKET_NAME) \
                     .put_object(Key=img_name, Body=img, ContentType='image/jpg')
             except:
-                print('S3 ERROR')
+                print('S3 ERROR!!!')
 
+            # 저장 후 redirect
             return redirect('/mypage/profile')
         else:
             return JsonResponse({'message': "This User doesn't exist", 'status': 400}, status=400)
     else:
-        profileForm = FileUploadForm
+        profile_form = FileUploadForm
         context = {
-            'profileUpload': profileForm,
+            'profileUpload': profile_form,
         }
         return render(request, 'mypage/profile.html', context)
 
