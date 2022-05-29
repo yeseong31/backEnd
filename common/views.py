@@ -219,7 +219,6 @@ class LoginTestView(View):
     def post(self, request):
         userid = request.POST['userid']
         password = request.POST['password']
-        keep_login = request.POST['keep_login']
 
         # 사용자가 로그인 화면에서 뒤로가기를 포함한 동작을 수행하면 강제 로그아웃
         if request.COOKIES.get('userid') is not None:

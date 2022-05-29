@@ -1,25 +1,36 @@
 import collections
 import json
+import os.path
 
 import boto3
+import numpy as np
 from botocore.config import Config
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
-from rest_framework import status
-from rest_framework.response import Response
-from rest_framework.views import APIView
+from matplotlib import pyplot as plt
 
 from blog.models import Keywords
 from blog.models import User as Question
 from common.forms import FileUploadForm
 from common.models import User, Profile
 from config import my_settings
-from mypage.serializers import ProfileSerializer
+from mypage.S3UpDownLoader import S3UpDownLoader
+
+
+class NumpyEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        return json.JSONEncoder.default(self, obj)
 
 
 def index(request):
     if request.method == 'POST':
-        userid = request.POST.get('userid', None)
+        # ----- JSON -----
+        data = json.loads(request.body)
+        userid = data['userid']
+        # ----- HTML -----
+        # userid = request.POST.get('userid', None)
 
         # 해당 userid를 가지는 사용자가 존재한다면
         if User.objects.filter(userid=userid).exists():
@@ -30,19 +41,38 @@ def index(request):
             # user의 키워드 빈도 수 계산
             keyword_cnt_info = check_freq_keyword(user)
 
-            # 마이페이지에 대한 정보(이미지)가 있다면
             img = None
+
+            # 마이페이지에 대한 정보(이미지)가 있다면 S3에서 이미지 다운로드
             if Profile.objects.filter(userid=userid).exists():
-                # S3에 저장된 이미지의 경로
-                path = json.dumps(str(Profile.objects.get(userid=userid).img))
-                # print(f'path: {path}')
-                #
-                # # 해당 경로로부터 프로필 이미지 다운로드
-                # client = boto3.client('s3')
-                # client.download_file(my_settings.AWS_STORAGE_BUCKET_NAME, path, '배경화면-지구.jpg')
+
+                # 출발지 (S3 이미지 경로) (DB에 저장된 경로에는 큰따옴표가 붙어 있어 이를 슬라이싱으로 제거하였음)
+                src_path = json.dumps(str(Profile.objects.get(userid=userid).img))[1:-1]
+                print(f'src_path: {src_path}')
+                # 목적지 (프로젝트 내 이미지 저장 경로)
+                dest_path = 'static/image/'
+                print(f'dest_path: {dest_path}')
+                # 파일 이름
+                file_name = os.path.basename(src_path)
+                print(f'file_name: {file_name}')
+
+                try:
+                    # S3에서 이미지 다운로드
+                    S3UpDownLoader(
+                        bucket_name=my_settings.AWS_STORAGE_BUCKET_NAME,
+                        access_key=my_settings.AWS_ACCESS_KEY_ID,
+                        secret_key=my_settings.AWS_SECRET_ACCESS_KEY,
+                        verbose=False
+                    ).download_file(src_path, dest_path)
+
+                    # 로컬에 저장된 파일을 JSON으로 전달
+                    img = json.dumps(plt.imread(dest_path + file_name), cls=NumpyEncoder)
+
+                except Exception as e:
+                    print(e)
 
             context = {
-                'image': path,
+                'image': img,
                 'info': {
                     'email': user.email,
                     'questionCount': question_count
@@ -50,7 +80,6 @@ def index(request):
                 'keywords': keyword_cnt_info
             }
 
-            print(f'context = {context}')
             # return render(request, 'mypage/index.html', context)
             return JsonResponse({'context': context, 'status': 200}, status=200)
 
@@ -81,24 +110,50 @@ def check_freq_keyword(user):
 
 
 # 이미지 업로드
-def ProfileUpload(request):
+def image_upload(request):
     if request.method == 'POST':
-        img = request.FILES['image']
-        img_name = request.POST['img_name']
-        userid = request.POST['userid']
+        # ----- JSON -----
+        data = json.loads(request.body)
+        img = data['img']
+        img_name = data['img_name']
+        userid = data['userid']
+        # ----- HTML -----
+        # img = request.FILES['image']
+        # img_name = request.POST['img_name']
+        # userid = request.POST['userid']
 
         print(f'img_name: {img_name}')
 
         if User.objects.filter(userid=userid).exists():
             user = User.objects.get(userid=userid)
 
+            # 이미 등록된 이미지가 있다면
+            if Profile.objects.filter(userid=userid).exists():
+                # DB에 존재하는 이미지 Get
+                target = Profile.objects.get(userid=userid)
+
+                # S3 Bucket에 존재하는 이미지 삭제
+                # s3_client = boto3.client(
+                #     's3',
+                #     aws_access_key_id=my_settings.AWS_ACCESS_KEY_ID,
+                #     aws_secret_access_key=my_settings.AWS_SECRET_ACCESS_KEY,
+                # )
+                # s3_client.delete_object(
+                #     Bucket=my_settings.AWS_STORAGE_BUCKET_NAME,
+                #     Key=target.img    # 이미지 객체가 아니라 문자열이라서 에러 발생..
+                # )
+
+                # DB에 존재하는 이미지 삭제
+                target.delete()
+
+            # 새로운 이미지 등록
             profile_upload = Profile(
                 userid=user,
                 img=img
             )
             profile_upload.save()
 
-            # Amazon S3에 이미지 등록
+            # Amazon S3 Bucket에 이미지 저장
             try:
                 s3 = boto3.resource(
                     's3',
@@ -109,22 +164,17 @@ def ProfileUpload(request):
                 s3.Bucket(my_settings.AWS_STORAGE_BUCKET_NAME) \
                     .put_object(Key=img_name, Body=img, ContentType='image/jpg')
             except:
-                print('S3 ERROR')
+                print('S3 ERROR!!!')
 
-            return redirect('/mypage/profile')
+            # return redirect('/mypage/profile')
+            return JsonResponse({'message': "Success", 'status': 200}, status=200)
+
         else:
             return JsonResponse({'message': "This User doesn't exist", 'status': 400}, status=400)
     else:
-        profileForm = FileUploadForm
+        profile_form = FileUploadForm
         context = {
-            'profileUpload': profileForm,
+            'profileUpload': profile_form,
         }
-        return render(request, 'mypage/profile.html', context)
-
-# class Image(APIView):
-#     def post(self, request, format=None):
-#         serializers = ProfileSerializer(data=request.data)
-#         if serializers.is_valid():
-#             serializers.save()
-#             return Response(serializers.data, status=status.HTTP_201_CREATED)
-#         return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
+        # return render(request, 'mypage/profile.html', context)
+        return JsonResponse({'message': "profile get...", 'status': 200}, status=200)

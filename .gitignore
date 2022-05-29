@@ -172,5 +172,6 @@ ENV/
 # privacy infomation
 my_settings.py
 answer_test_file.txt
+static/image/*
 
 # End of https://www.gitignore.io/api/macos,linux,django,python,pycharm

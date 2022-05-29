@@ -60,7 +60,7 @@ INSTALLED_APPS = [
     'sslserver',
 
     # mypage
-    'storages',
+    # 'storages',
     'mypage.apps.MypageConfig',
 ]
 
@@ -141,8 +141,8 @@ STATICFILES_DIRS = [
 ]
 
 # 미디어 파일을 관리할 root media directory
-# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-MEDIA_ROOT = os.path.join(BASE_DIR, 'path/to/store/my/files/')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'path/to/store/my/files/')
 MEDIA_URL = '/media/'
 
 # 로그인이 성공한 뒤 이동 URL
