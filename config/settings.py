@@ -60,7 +60,7 @@ INSTALLED_APPS = [
     'sslserver',
 
     # mypage
-    'storages',
+    # 'storages',
     'mypage.apps.MypageConfig',
 ]
 

@@ -13,7 +13,7 @@ urlpatterns = [
     path('home/', RedirectView.as_view(url='/', permanent=True)),
 
     # 이미지 등록
-    path('profile/', ProfileUpload, name="profileUpload"),
+    path('profile/', image_upload, name="profileUpload"),
 
     # path('image/', Image.as_view(), name='image'),
 
