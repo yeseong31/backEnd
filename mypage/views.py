@@ -1,20 +1,20 @@
 import collections
 import json
+import os.path
+import time
 
 import boto3
+from PIL.Image import Image
 from botocore.config import Config
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
-from rest_framework import status
-from rest_framework.response import Response
-from rest_framework.views import APIView
 
 from blog.models import Keywords
 from blog.models import User as Question
 from common.forms import FileUploadForm
 from common.models import User, Profile
-from config import my_settings
-from mypage.serializers import ProfileSerializer
+from config import my_settings, settings
+from mypage.S3UpDownLoader import S3UpDownLoader
 
 
 def index(request):
@@ -30,19 +30,39 @@ def index(request):
             # user의 키워드 빈도 수 계산
             keyword_cnt_info = check_freq_keyword(user)
 
-            # 마이페이지에 대한 정보(이미지)가 있다면
             img = None
+
+            # 마이페이지에 대한 정보(이미지)가 있다면 S3에서 이미지 다운로드
             if Profile.objects.filter(userid=userid).exists():
-                # S3에 저장된 이미지의 경로
-                path = json.dumps(str(Profile.objects.get(userid=userid).img))
-                # print(f'path: {path}')
-                #
-                # # 해당 경로로부터 프로필 이미지 다운로드
-                # client = boto3.client('s3')
-                # client.download_file(my_settings.AWS_STORAGE_BUCKET_NAME, path, '배경화면-지구.jpg')
+
+                # 출발지 (S3 이미지 경로)
+                src_path = json.dumps(str(Profile.objects.get(userid=userid).img))[1:-1]
+                print(f'src_path: {src_path}')
+                # 목적지 (프로젝트 내 이미지 저장 경로)
+                dest_path = 'static/image/'
+                print(f'dest_path: {dest_path}')
+                # 파일 이름
+                file_name = os.path.basename(src_path)
+                print(f'file_name: {file_name}')
+
+                try:
+                    # S3에서 이미지 다운로드
+                    S3UpDownLoader(
+                        bucket_name=my_settings.AWS_STORAGE_BUCKET_NAME,
+                        access_key=my_settings.AWS_ACCESS_KEY_ID,
+                        secret_key=my_settings.AWS_SECRET_ACCESS_KEY,
+                        verbose=False
+                    ).download_file(src_path, dest_path)
+
+                    # 다운로드 한 이미지를 JSON으로 전달
+                    file_path = dest_path + file_name
+
+
+                except Exception as e:
+                    print(e)
 
             context = {
-                'image': path,
+                'image': None,
                 'info': {
                     'email': user.email,
                     'questionCount': question_count
@@ -98,15 +118,15 @@ def image_upload(request):
                 target = Profile.objects.get(userid=userid)
 
                 # S3 Bucket에 존재하는 이미지 삭제
-                s3_client = boto3.client(
-                    's3',
-                    aws_access_key_id=my_settings.AWS_ACCESS_KEY_ID,
-                    aws_secret_access_key=my_settings.AWS_SECRET_ACCESS_KEY,
-                )
-                s3_client.delete_object(
-                    Bucket=my_settings.AWS_STORAGE_BUCKET_NAME,
-                    Key=target.img    # 이미지 객체가 아니라 문자열이라서 에러 발생..
-                )
+                # s3_client = boto3.client(
+                #     's3',
+                #     aws_access_key_id=my_settings.AWS_ACCESS_KEY_ID,
+                #     aws_secret_access_key=my_settings.AWS_SECRET_ACCESS_KEY,
+                # )
+                # s3_client.delete_object(
+                #     Bucket=my_settings.AWS_STORAGE_BUCKET_NAME,
+                #     Key=target.img    # 이미지 객체가 아니라 문자열이라서 에러 발생..
+                # )
 
                 # DB에 존재하는 이미지 삭제
                 target.delete()
@@ -141,11 +161,3 @@ def image_upload(request):
             'profileUpload': profile_form,
         }
         return render(request, 'mypage/profile.html', context)
-
-# class Image(APIView):
-#     def post(self, request, format=None):
-#         serializers = ProfileSerializer(data=request.data)
-#         if serializers.is_valid():
-#             serializers.save()
-#             return Response(serializers.data, status=status.HTTP_201_CREATED)
-#         return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
