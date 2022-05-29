@@ -24,11 +24,11 @@ class NumpyEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-def index(request):
-    if request.method == 'POST':
+def index(request, userid):
+    if request.method == 'GET':
         # ----- JSON -----
-        data = json.loads(request.body)
-        userid = data['userid']
+        # data = json.loads(request.body)
+        # userid = data['userid']
         # ----- HTML -----
         # userid = request.POST.get('userid', None)
 
