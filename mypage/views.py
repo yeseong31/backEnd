@@ -72,10 +72,10 @@ def index(request):
                     print(e)
 
             context = {
-                'image': img,
                 'info': {
                     'email': user.email,
-                    'questionCount': question_count
+                    'questionCount': question_count,
+                    'image': img
                 },
                 'keywords': keyword_cnt_info
             }
