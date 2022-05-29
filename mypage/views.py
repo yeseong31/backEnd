@@ -1,25 +1,36 @@
 import collections
 import json
 import os.path
-import time
 
 import boto3
-from PIL.Image import Image
+import numpy as np
 from botocore.config import Config
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
+from matplotlib import pyplot as plt
 
 from blog.models import Keywords
 from blog.models import User as Question
 from common.forms import FileUploadForm
 from common.models import User, Profile
-from config import my_settings, settings
+from config import my_settings
 from mypage.S3UpDownLoader import S3UpDownLoader
+
+
+class NumpyEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        return json.JSONEncoder.default(self, obj)
 
 
 def index(request):
     if request.method == 'POST':
-        userid = request.POST.get('userid', None)
+        # ----- JSON -----
+        data = json.loads(request.body)
+        userid = data['userid']
+        # ----- HTML -----
+        # userid = request.POST.get('userid', None)
 
         # 해당 userid를 가지는 사용자가 존재한다면
         if User.objects.filter(userid=userid).exists():
@@ -35,7 +46,7 @@ def index(request):
             # 마이페이지에 대한 정보(이미지)가 있다면 S3에서 이미지 다운로드
             if Profile.objects.filter(userid=userid).exists():
 
-                # 출발지 (S3 이미지 경로)
+                # 출발지 (S3 이미지 경로) (DB에 저장된 경로에는 큰따옴표가 붙어 있어 이를 슬라이싱으로 제거하였음)
                 src_path = json.dumps(str(Profile.objects.get(userid=userid).img))[1:-1]
                 print(f'src_path: {src_path}')
                 # 목적지 (프로젝트 내 이미지 저장 경로)
@@ -54,15 +65,14 @@ def index(request):
                         verbose=False
                     ).download_file(src_path, dest_path)
 
-                    # 다운로드 한 이미지를 JSON으로 전달
-                    file_path = dest_path + file_name
-
+                    # 로컬에 저장된 파일을 JSON으로 전달
+                    img = json.dumps(plt.imread(dest_path + file_name), cls=NumpyEncoder)
 
                 except Exception as e:
                     print(e)
 
             context = {
-                'image': None,
+                'image': img,
                 'info': {
                     'email': user.email,
                     'questionCount': question_count
@@ -70,7 +80,6 @@ def index(request):
                 'keywords': keyword_cnt_info
             }
 
-            print(f'context = {context}')
             # return render(request, 'mypage/index.html', context)
             return JsonResponse({'context': context, 'status': 200}, status=200)
 
@@ -103,9 +112,15 @@ def check_freq_keyword(user):
 # 이미지 업로드
 def image_upload(request):
     if request.method == 'POST':
-        img = request.FILES['image']
-        img_name = request.POST['img_name']
-        userid = request.POST['userid']
+        # ----- JSON -----
+        data = json.loads(request.body)
+        img = data['img']
+        img_name = data['img_name']
+        userid = data['userid']
+        # ----- HTML -----
+        # img = request.FILES['image']
+        # img_name = request.POST['img_name']
+        # userid = request.POST['userid']
 
         print(f'img_name: {img_name}')
 
@@ -151,8 +166,9 @@ def image_upload(request):
             except:
                 print('S3 ERROR!!!')
 
-            # 저장 후 redirect
-            return redirect('/mypage/profile')
+            # return redirect('/mypage/profile')
+            return JsonResponse({'message': "Success", 'status': 200}, status=200)
+
         else:
             return JsonResponse({'message': "This User doesn't exist", 'status': 400}, status=400)
     else:
@@ -160,4 +176,5 @@ def image_upload(request):
         context = {
             'profileUpload': profile_form,
         }
-        return render(request, 'mypage/profile.html', context)
+        # return render(request, 'mypage/profile.html', context)
+        return JsonResponse({'message': "profile get...", 'status': 200}, status=200)
