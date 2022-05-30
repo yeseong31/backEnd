@@ -14,6 +14,10 @@
             <input id="userid" name="userid"
                    value="{{ user.userid|default_if_none:'' }}" hidden>
         </div>
+        <div>
+            <label for="language"> 언어 </label>
+            <input id="language" name="language">
+        </div>
         <button type="submit" value="send"> 전송 </button>
     </form>
 
