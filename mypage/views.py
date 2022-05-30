@@ -24,13 +24,13 @@ class NumpyEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-def index(request, userid):
+def index(request):
     if request.method == 'GET':
         # ----- JSON -----
         # data = json.loads(request.body)
         # userid = data['userid']
         # ----- HTML -----
-        # userid = request.POST.get('userid', None)
+        userid = request.GET.get('userid', None)
 
         # 해당 userid를 가지는 사용자가 존재한다면
         if User.objects.filter(userid=userid).exists():
@@ -165,6 +165,7 @@ def image_upload(request):
                     .put_object(Key=img_name, Body=img, ContentType='image/jpg')
             except:
                 print('S3 ERROR!!!')
+                return JsonResponse({'message': "S3 ERROR!", 'status': 400}, status=400)
 
             # return redirect('/mypage/profile')
             return JsonResponse({'message': "Success", 'status': 200}, status=200)
