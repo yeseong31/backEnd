@@ -196,9 +196,9 @@ class S3UpDownLoader():
             2. dest_path : path/.../.../s3_storage_example
         '''
 
-        src_path = os.path.abspath(src_path)
         file_size = os.path.getsize(src_path)
         file_name = os.path.basename(src_path)
+        src_path = src_path + file_name
 
         dest_path = self.remove_last_seperator(dest_path)
         if dest_path == "":
