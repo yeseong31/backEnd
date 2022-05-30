@@ -73,10 +73,10 @@ def index(request):
                 'info': {
                     'email': user.email,
                     'questionCount': question_count,
-                    'image': img
+                    'image': img,
+                    'username': user.username
                 },
-                'keywords': keyword_cnt_info,
-                'username': user.username
+                'keywords': keyword_cnt_info
             }
 
             # return render(request, 'mypage/index.html', context)
