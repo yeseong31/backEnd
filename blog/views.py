@@ -145,7 +145,23 @@ def key_word(request):
         )
         return response
 
-
+# qna action (javascript) 05.30
+def qna_main2(request):
+    if request.method == 'POST':
+        question = request.POST['text_area']  # 질문영역 
+        userid = request.POST['userid']
+        
+        # 자바스크립트 분야에 대한 질문에 한정하기 위해 'javascript' 문장 삽입
+        translate_question = papago(question)
+        pre_question = 'javascript' + '\n' + translate_question + 'with code'
+        
+        # OpenAI Codex의 반환값 받기
+        response = question_to_response(pre_question)
+        # 반환값 중 질문에 대한 답변 추출
+        answer = extract_answer_sentences(response)
+        
+        return answer
+        
 # qna action (백엔드)
 def qna_main(request):
     if request.method == 'POST':
