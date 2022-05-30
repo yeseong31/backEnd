@@ -49,11 +49,18 @@ class IndexView(View):
         request = json.loads(request.body)
         question = request['question']
         userid = request['userid']
+        language = request['language']
 
         # 한글로 입력된 문장을 Papago API를 통해 번역 수행
         # 파이썬 분야에 대한 질문에 한정하기 위해 'Python 3' 문장 삽입
         translate_question = papago(question)
-        pre_question = 'Python 3' + '\n' + translate_question + 'with code'
+
+        # 언어 설정
+        if language not in ['Python 3', 'Javascript']:
+            return JsonResponse({'message': 'This language is not supported by the service.',
+                                 'status': 400}, status=400)
+
+        pre_question = language + '\n' + translate_question + 'with code'
 
         # OpenAI Codex의 반환값 전체를 받아옴
         response = question_to_response(pre_question)
@@ -69,7 +76,7 @@ class IndexView(View):
                           code=answer,
                           userid=user,
                           star=5.0,
-                          language='Python 3',
+                          language=language,
                           preprocess=response)
             friend.save()
 
@@ -167,11 +174,18 @@ def qna_main(request):
     if request.method == 'POST':
         question = request.POST['text_area']  # 질문 영역 (03.20 수정: user_text → question 으로 이름 변경)
         userid = request.POST['userid']
+        language = request.POST['language']
 
         # 한글로 입력된 문장을 Papago API를 통해 번역 수행
         # 파이썬 분야에 대한 질문에 한정하기 위해 'Python 3' 문장 삽입
         translate_question = papago(question)
-        pre_question = 'Python 3' + '\n' + translate_question + 'with code'
+
+        # 언어 설정
+        if language not in ['Python 3', 'Javascript']:
+            return JsonResponse({'message': 'This language is not supported by the service.',
+                                 'status': 400}, status=400)
+
+        pre_question = language + '\n' + translate_question + 'with code'
 
         # OpenAI Codex의 반환값 전체를 받아옴
         response = question_to_response(pre_question)
@@ -193,7 +207,7 @@ def qna_main(request):
                           code=answer,
                           userid=user,
                           star=5.0,
-                          language='Python 3',
+                          language=language,
                           preprocess=response)
 
             friend.save()
