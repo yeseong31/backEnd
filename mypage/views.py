@@ -56,26 +56,25 @@ def index(request):
                 file_name = os.path.basename(src_path)
                 print(f'file_name: {file_name}')
 
-                try:
-                    # S3에서 이미지 다운로드
-                    S3UpDownLoader(
-                        bucket_name=my_settings.AWS_STORAGE_BUCKET_NAME,
-                        access_key=my_settings.AWS_ACCESS_KEY_ID,
-                        secret_key=my_settings.AWS_SECRET_ACCESS_KEY,
-                        verbose=False
-                    ).download_file(src_path, dest_path)
+                img = my_settings.AWS_S3_BUCKET_LINK + src_path
 
-                    # 로컬에 저장된 파일을 JSON으로 전달
-                    img = json.dumps(plt.imread(dest_path + file_name), cls=NumpyEncoder)
-
-                except Exception as e:
-                    print(e)
+                # try:
+                #     # S3에서 이미지 다운로드
+                #     S3UpDownLoader(
+                #         bucket_name=my_settings.AWS_STORAGE_BUCKET_NAME,
+                #         access_key=my_settings.AWS_ACCESS_KEY_ID,
+                #         secret_key=my_settings.AWS_SECRET_ACCESS_KEY,
+                #         verbose=False
+                #     ).download_file(src_path, dest_path)
+                # except Exception as e:
+                #     print(e)
 
             context = {
                 'info': {
                     'email': user.email,
                     'questionCount': question_count,
-                    'image': img
+                    'image': img,
+                    'username': user.username
                 },
                 'keywords': keyword_cnt_info
             }
@@ -113,17 +112,12 @@ def check_freq_keyword(user):
 def image_upload(request):
     if request.method == 'POST':
         # ----- JSON -----
-        data = json.loads(request.body)
-        img = data['img']
+        data = json.loads(request)
+        # img = data['img']
         userid = data['userid']
-        # img_name = data['img_name']
         # ----- HTML -----
-        # img = request.FILES['image']
-        # img_name = request.POST['img_name']
+        img = request.FILES['image']
         # userid = request.POST['userid']
-
-        # print(f'img_name: {img_name}')
-        # print(f'img_type: {type(img)}')
 
         if User.objects.filter(userid=userid).exists():
             user = User.objects.get(userid=userid)
@@ -167,11 +161,13 @@ def image_upload(request):
             # print(f'file_name: {file_name}')
 
             try:
+                # s3 객체 생성
                 s3 = boto3.resource(
                     's3',
                     aws_access_key_id=my_settings.AWS_ACCESS_KEY_ID,
                     aws_secret_access_key=my_settings.AWS_SECRET_ACCESS_KEY
                 )
+                # s3에 이미지 추가
                 s3.Bucket(my_settings.AWS_STORAGE_BUCKET_NAME) \
                     .put_object(Key=dest_path, Body=img, ContentType='image/jpg')
 
