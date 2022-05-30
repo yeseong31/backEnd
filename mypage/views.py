@@ -27,10 +27,10 @@ class NumpyEncoder(json.JSONEncoder):
 def index(request):
     if request.method == 'GET':
         # ----- JSON -----
-        data = json.loads(request.body)
-        userid = data['userid']
+        # data = json.loads(request.body)
+        # userid = data['userid']
         # ----- HTML -----
-        # userid = request.GET.get('userid', None)
+        userid = request.GET.get('userid', None)
 
         # 해당 userid를 가지는 사용자가 존재한다면
         if User.objects.filter(userid=userid).exists():
