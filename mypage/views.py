@@ -115,8 +115,8 @@ def image_upload(request):
         # ----- JSON -----
         data = json.loads(request.body)
         img = data['img']
-        img_name = data['img_name']
         userid = data['userid']
+        # img_name = data['img_name']
         # ----- HTML -----
         # img = request.FILES['image']
         # img_name = request.POST['img_name']
