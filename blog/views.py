@@ -160,7 +160,7 @@ def qna_main2(request):
         
         # 자바스크립트 분야에 대한 질문에 한정하기 위해 'javascript' 문장 삽입
         translate_question = papago(question)
-        pre_question = 'javascript' + '\n' + translate_question + 'with code'
+        pre_question = 'Javascript' + '\n' + translate_question + 'with code'
         
         # OpenAI Codex의 반환값 받기
         response = question_to_response(pre_question)
