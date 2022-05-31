@@ -110,15 +110,17 @@ def check_freq_keyword(user):
 
 # 이미지 업로드
 def image_upload(request):
+    # /mypage/profile POST
     if request.method == 'POST':
         # ----- JSON -----
-        data = json.loads(request)
+        # data = json.loads(request)
         # img = data['img']
         # userid = data['userid']
         # ----- HTML -----
         img = request.FILES.__getitem__('img')
         userid = request.FILES.__getitem__('userid')
 
+        # 사용자가 있다면
         if User.objects.filter(userid=userid).exists():
             user = User.objects.get(userid=userid)
 
@@ -192,6 +194,7 @@ def image_upload(request):
 
         else:
             return JsonResponse({'message': "This User doesn't exist", 'status': 400}, status=400)
+    # /mypage/profile GET
     else:
         profile_form = FileUploadForm
         context = {
