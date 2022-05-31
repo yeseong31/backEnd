@@ -9,7 +9,7 @@ app_name = 'mypage'
 
 urlpatterns = [
     # main page
-    path('', index, name='index'),
+    path('<str:userid>/', index, name='index'),
     path('home/', RedirectView.as_view(url='/', permanent=True)),
 
     # 이미지 등록

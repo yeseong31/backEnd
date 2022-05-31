@@ -24,13 +24,13 @@ class NumpyEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-def index(request):
+def index(request, userid):
     if request.method == 'GET':
         # ----- JSON -----
         # data = json.loads(request.body)
         # userid = data['userid']
         # ----- HTML -----
-        userid = request.GET.get('userid', None)
+        # userid = request.GET['userid']
 
         # 해당 userid를 가지는 사용자가 존재한다면
         if User.objects.filter(userid=userid).exists():
@@ -84,7 +84,7 @@ def index(request):
 
         # 해당 userid를 가지는 사용자가 없으므로 에러 반환
         else:
-            return JsonResponse({'message': 'This ID does not exist.', 'status': 400}, status=400)
+            return JsonResponse({'message': 'This ID does not exist.', 'status': 401}, status=401)
 
 
 def count_questions(user):
@@ -114,10 +114,10 @@ def image_upload(request):
         # ----- JSON -----
         data = json.loads(request)
         # img = data['img']
-        userid = data['userid']
+        # userid = data['userid']
         # ----- HTML -----
-        img = request.FILES['image']
-        # userid = request.POST['userid']
+        img = request.FILES.__getitem__('img')
+        userid = request.FILES.__getitem__('userid')
 
         if User.objects.filter(userid=userid).exists():
             user = User.objects.get(userid=userid)
