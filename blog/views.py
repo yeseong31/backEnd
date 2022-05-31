@@ -80,8 +80,13 @@ class IndexView(View):
                           preprocess=response)
             friend.save()
 
-            # 답변에서 키워드 추출
-            keyword_question = "Extract keywords from this text: " + answer
+            # 질문에서 키워드 추출
+            keyword_question = "Extract keywords from this text: " + translate_question
+            # keyword_question = "Extract keywords from this text: " + answer
+
+            # 키워드를 추출할 문장 확인
+            print(f'타겟 문장: {translate_question}')
+
             # OpenAI Codex의 반환값 전체를 받아옴
             response = question_to_response(keyword_question)
             # 반환값 중 질문에 대한 답변만 추출
@@ -215,6 +220,9 @@ def qna_main(request):
             # 질문에서 키워드 추출
             keyword_question = "Extract keywords from this text: " + translate_question
             # keyword_question = "Extract keywords from this text: " + answer
+
+            # 키워드를 추출할 문장 확인
+            print(f'타겟 문장: {translate_question}')
 
             # OpenAI Codex의 반환값 전체를 받아옴
             response = question_to_response(keyword_question)
