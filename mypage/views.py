@@ -113,10 +113,10 @@ def image_upload(request):
     if request.method == 'POST':
         # ----- JSON -----
         data = json.loads(request)
-        # img = data['img']
+        img = data['img']
         userid = data['userid']
         # ----- HTML -----
-        img = request.FILES['image']
+        # img = request.FILES['image']
         # userid = request.POST['userid']
 
         if User.objects.filter(userid=userid).exists():
