@@ -25,13 +25,8 @@ class NumpyEncoder(json.JSONEncoder):
 
 
 def index(request, userid):
+    # 마이페이지 접근
     if request.method == 'GET':
-        # ----- JSON -----
-        # data = json.loads(request.body)
-        # userid = data['userid']
-        # ----- HTML -----
-        # userid = request.GET['userid']
-
         # 해당 userid를 가지는 사용자가 존재한다면
         if User.objects.filter(userid=userid).exists():
             user = User.objects.get(userid=userid)
@@ -85,11 +80,10 @@ def index(request, userid):
         # 해당 userid를 가지는 사용자가 없으므로 에러 반환
         else:
             return JsonResponse({'message': 'This ID does not exist.', 'status': 401}, status=401)
+
+    # 사용자 프로필 등록
     elif request.method == 'POST':
         img = request.FILES['img']
-        print(img)
-        userid = request.POST['userid']
-        print(userid)
 
         # 사용자가 있다면
         if User.objects.filter(userid=userid).exists():
@@ -120,8 +114,6 @@ def index(request, userid):
                 img=img
             )
             profile_upload.save()
-
-            # 파일을 임시로 'media/' 위치에 저장
 
             # 출발지 (S3 이미지 경로) (DB에 저장된 경로에는 큰따옴표가 붙어 있어 이를 슬라이싱으로 제거하였음)
             # src_path = 'media/' + img_name
@@ -165,7 +157,6 @@ def index(request, userid):
 
         else:
             return JsonResponse({'message': "This User doesn't exist", 'status': 400}, status=400)
-    # /mypage/profile GET
 
 
 def count_questions(user):
@@ -196,94 +187,3 @@ def get_form_data(request):
         return JsonResponse({'message': "Success", 'status': 200}, status=200)
 
     return JsonResponse({'message': "Failure", 'status': 400}, status=400)
-
-
-# 이미지 업로드
-# def image_upload(request):
-#     # /mypage/profile POST
-#     if request.method == 'POST':
-#         userid = request.POST['userid']
-#         print(userid)
-#
-#         # 사용자가 있다면
-#         if User.objects.filter(userid=userid).exists():
-#             user = User.objects.get(userid=userid)
-#
-#             # 이미 등록된 이미지가 있다면
-#             if Profile.objects.filter(userid=userid).exists():
-#                 # DB에 존재하는 이미지 Get
-#                 target = Profile.objects.get(userid=userid)
-#
-#                 # S3 Bucket에 존재하는 이미지 삭제
-#                 # s3_client = boto3.client(
-#                 #     's3',
-#                 #     aws_access_key_id=my_settings.AWS_ACCESS_KEY_ID,
-#                 #     aws_secret_access_key=my_settings.AWS_SECRET_ACCESS_KEY,
-#                 # )
-#                 # s3_client.delete_object(
-#                 #     Bucket=my_settings.AWS_STORAGE_BUCKET_NAME,
-#                 #     Key=target.img    # 이미지 객체가 아니라 문자열이라서 에러 발생..
-#                 # )
-#
-#                 # DB에 존재하는 이미지 삭제
-#                 target.delete()
-#
-#             # 새로운 이미지 등록
-#             profile_upload = Profile(
-#                 userid=user,
-#                 img=img
-#             )
-#             profile_upload.save()
-#
-#             # 파일을 임시로 'media/' 위치에 저장
-#
-#             # 출발지 (S3 이미지 경로) (DB에 저장된 경로에는 큰따옴표가 붙어 있어 이를 슬라이싱으로 제거하였음)
-#             # src_path = 'media/' + img_name
-#             # print(f'src_path: {src_path}')
-#             # # 목적지 (프로젝트 내 이미지 저장 경로)
-#             dest_path = json.dumps(str(Profile.objects.get(userid=userid).img))[1:-1]
-#             print(f'dest_path: {dest_path}')
-#             # # 파일 이름
-#             # file_name = os.path.basename(src_path)
-#             # print(f'file_name: {file_name}')
-#
-#             try:
-#                 # s3 객체 생성
-#                 s3 = boto3.resource(
-#                     's3',
-#                     aws_access_key_id=my_settings.AWS_ACCESS_KEY_ID,
-#                     aws_secret_access_key=my_settings.AWS_SECRET_ACCESS_KEY
-#                 )
-#                 # s3에 이미지 추가
-#                 s3.Bucket(my_settings.AWS_STORAGE_BUCKET_NAME) \
-#                     .put_object(Key=dest_path, Body=img, ContentType='image/jpg')
-#
-#                 # S3에 이미지 업로드
-#                 # S3UpDownLoader(
-#                 #     bucket_name=my_settings.AWS_STORAGE_BUCKET_NAME,
-#                 #     access_key=my_settings.AWS_ACCESS_KEY_ID,
-#                 #     secret_key=my_settings.AWS_SECRET_ACCESS_KEY,
-#                 #     verbose=False
-#                 # ).upload_file(img_name, dest_path)
-#
-#             except:
-#                 # S3 ERROR가 발생하고 있지만, S3에 이미지 저장은 잘 되고 있으므로 일단은 정상 진행되게끔...
-#                 # 에러 발생 이유는 아직 자세히 알지 못함...
-#                 print('S3 ERROR!!!')
-#                 return JsonResponse({'message': "S3 ERROR... However, the image has been saved successfully, "
-#                                                 "so continue", 'status': 200}, status=200)
-#                 # return JsonResponse({'message': "S3 ERROR!", 'status': 400}, status=400)
-#
-#             # return redirect('/mypage/profile')
-#             return JsonResponse({'message': "Success", 'status': 200}, status=200)
-#
-#         else:
-#             return JsonResponse({'message': "This User doesn't exist", 'status': 400}, status=400)
-#     # /mypage/profile GET
-#     else:
-#         profile_form = FileUploadForm
-#         context = {
-#             'profileUpload': profile_form,
-#         }
-#         return render(request, 'mypage/profile.html', context)
-#         # return JsonResponse({'message': "profile get...", 'status': 200}, status=200)
