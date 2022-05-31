@@ -25,13 +25,8 @@ class NumpyEncoder(json.JSONEncoder):
 
 
 def index(request, userid):
+    # 마이페이지 접근
     if request.method == 'GET':
-        # ----- JSON -----
-        # data = json.loads(request.body)
-        # userid = data['userid']
-        # ----- HTML -----
-        # userid = request.GET['userid']
-
         # 해당 userid를 가지는 사용자가 존재한다면
         if User.objects.filter(userid=userid).exists():
             user = User.objects.get(userid=userid)
@@ -86,39 +81,9 @@ def index(request, userid):
         else:
             return JsonResponse({'message': 'This ID does not exist.', 'status': 401}, status=401)
 
-
-def count_questions(user):
-    questions_obj = Question.objects.filter(userid=user).all()
-    return len(questions_obj)
-
-
-# 전달받은 user의 키워드 빈도 수 계산
-def check_freq_keyword(user):
-    keywords_obj = Keywords.objects.filter(userid=user).all()
-
-    keyword_list = []
-    for keyword_obj in keywords_obj:
-        target = keyword_obj.keyword
-        keyword_list.append(target)
-
-    result = []
-    for cnt in collections.Counter(keyword_list).most_common(10):
-        result.append(list(cnt))
-    # print(f'result = {result}')
-    return sorted(result, key=lambda x: x[1], reverse=True)  # 키워드 빈도수, 사전순 정렬
-
-
-# 이미지 업로드
-def image_upload(request):
-    # /mypage/profile POST
-    if request.method == 'POST':
-        # ----- JSON -----
-        # data = json.loads(request)
-        # img = data['img']
-        # userid = data['userid']
-        # ----- HTML -----
-        img = request.FILES.__getitem__('img')
-        userid = request.FILES.__getitem__('userid')
+    # 사용자 프로필 등록
+    elif request.method == 'POST':
+        img = request.FILES['img']
 
         # 사용자가 있다면
         if User.objects.filter(userid=userid).exists():
@@ -149,8 +114,6 @@ def image_upload(request):
                 img=img
             )
             profile_upload.save()
-
-            # 파일을 임시로 'media/' 위치에 저장
 
             # 출발지 (S3 이미지 경로) (DB에 저장된 경로에는 큰따옴표가 붙어 있어 이를 슬라이싱으로 제거하였음)
             # src_path = 'media/' + img_name
@@ -194,11 +157,33 @@ def image_upload(request):
 
         else:
             return JsonResponse({'message': "This User doesn't exist", 'status': 400}, status=400)
-    # /mypage/profile GET
-    else:
-        profile_form = FileUploadForm
-        context = {
-            'profileUpload': profile_form,
-        }
-        return render(request, 'mypage/profile.html', context)
-        # return JsonResponse({'message': "profile get...", 'status': 200}, status=200)
+
+
+def count_questions(user):
+    questions_obj = Question.objects.filter(userid=user).all()
+    return len(questions_obj)
+
+
+# 전달받은 user의 키워드 빈도 수 계산
+def check_freq_keyword(user):
+    keywords_obj = Keywords.objects.filter(userid=user).all()
+
+    keyword_list = []
+    for keyword_obj in keywords_obj:
+        target = keyword_obj.keyword
+        keyword_list.append(target)
+
+    result = []
+    for cnt in collections.Counter(keyword_list).most_common(10):
+        result.append(list(cnt))
+    # print(f'result = {result}')
+    return sorted(result, key=lambda x: x[1], reverse=True)  # 키워드 빈도수, 사전순 정렬
+
+
+def get_form_data(request):
+    form = FileUploadForm(request.FILES, request.POST)
+    if form.is_valid():
+        print(f'유효한 폼')
+        return JsonResponse({'message': "Success", 'status': 200}, status=200)
+
+    return JsonResponse({'message': "Failure", 'status': 400}, status=400)
