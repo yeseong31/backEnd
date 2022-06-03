@@ -28,7 +28,7 @@ def index(request, userid):
             user = User.objects.get(userid=userid)
 
             # user의 질문 수 계산
-            question_count = count_questions(user)
+            question_count = count_all_questions(user)
             # user의 키워드 빈도 수 계산
             keyword_cnt_info = check_freq_keyword(user)
 
@@ -49,6 +49,9 @@ def index(request, userid):
 
                 img = my_settings.AWS_S3_BUCKET_LINK + src_path
 
+            # 잔디 기능 구현
+            my_grass = number_of_question(userid)
+
             context = {
                 'info': {
                     'email': user.email,
@@ -56,7 +59,8 @@ def index(request, userid):
                     'image': img,
                     'username': user.username
                 },
-                'keywords': keyword_cnt_info
+                'keywords': keyword_cnt_info,
+                'grass': my_grass
             }
 
             # return render(request, 'mypage/index.html', context)
@@ -128,9 +132,9 @@ def index(request, userid):
             return JsonResponse({'message': "This User doesn't exist", 'status': 400}, status=400)
 
 
-def count_questions(user):
-    questions_obj = Question.objects.filter(userid=user).all()
-    return len(questions_obj)
+# 해당 사용자의 모든 질문의 수를 카운트
+def count_all_questions(user):
+    return len(Question.objects.filter(userid=user).all())
 
 
 # 전달받은 user의 키워드 빈도 수 계산
@@ -147,6 +151,63 @@ def check_freq_keyword(user):
         result.append(list(cnt))
     # print(f'result = {result}')
     return sorted(result, key=lambda x: x[1], reverse=True)  # 키워드 빈도수, 사전순 정렬
+
+
+# 연 단위 사용자 질문 횟수 카운트
+def questions_per_year(request, userid, year):
+    if request.method == 'GET':
+        result = {}
+        for month in range(1, 13):
+            tmp = number_of_question(userid, year, month)
+            if tmp is None:
+                continue
+            result[month] = tmp
+        return JsonResponse({'result': result, 'status': 200}, status=200)
+    else:
+        return JsonResponse({'message': 'invalid request', 'status': 400}, status=400)
+
+
+# 월 단위 사용자 질문 횟수 카운트
+def questions_per_month(request, userid, year, month):
+    if request.method == 'GET':
+        result = {month: number_of_question(userid, year, month)}
+        return JsonResponse({'result': result, 'status': 200}, status=200)
+    else:
+        return JsonResponse({'message': 'invalid request', 'status': 400}, status=400)
+
+
+# 일 단위 사용자 질문 횟수 및 정보 확인
+def questions_per_day(request, userid, year, month, day):
+    if request.method == 'GET':
+        pass
+    else:
+        return JsonResponse({'message': 'invalid request', 'status': 400}, status=400)
+
+
+def number_of_question(userid, year, month):
+    # 사용자가 없다면 에러 메시지와 함께 그대로 return
+    if not User.objects.filter(userid=userid).exists():
+        return JsonResponse({'message': "This User doesn't exist", 'status': 400}, status=400)
+
+    user = User.objects.get(userid=userid)
+
+    # 특정 연, 월에 대한 질문을 카운트
+    target_time = str(year) + '-'
+    target_time += str(month) if month >= 10 else '0' + str(month)
+    print(f'target_time: {target_time}')
+
+    # 해당 사용자의 전체 질문들 중 원하는 시간대(월 단위)의 질문들로 필터링
+    target_questions = Question.objects.filter(userid=user, time__startswith=target_time)
+    if not target_questions.exists():
+        return {}
+
+    day_cnt_list = collections.defaultdict(int)
+
+    # 질문들에 대해 일 단위로 카운트
+    for target_question in target_questions:
+        day_cnt_list[target_question.time.day] += 1
+
+    return day_cnt_list
 
 
 def get_form_data(request):
