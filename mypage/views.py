@@ -4,17 +4,13 @@ import os.path
 
 import boto3
 import numpy as np
-from botocore.config import Config
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render, redirect
-from matplotlib import pyplot as plt
 
 from blog.models import Keywords
 from blog.models import User as Question
 from common.forms import FileUploadForm
 from common.models import User, Profile
 from config import my_settings
-from mypage.S3UpDownLoader import S3UpDownLoader
 
 
 class NumpyEncoder(json.JSONEncoder):
@@ -53,17 +49,6 @@ def index(request, userid):
 
                 img = my_settings.AWS_S3_BUCKET_LINK + src_path
 
-                # try:
-                #     # S3에서 이미지 다운로드
-                #     S3UpDownLoader(
-                #         bucket_name=my_settings.AWS_STORAGE_BUCKET_NAME,
-                #         access_key=my_settings.AWS_ACCESS_KEY_ID,
-                #         secret_key=my_settings.AWS_SECRET_ACCESS_KEY,
-                #         verbose=False
-                #     ).download_file(src_path, dest_path)
-                # except Exception as e:
-                #     print(e)
-
             context = {
                 'info': {
                     'email': user.email,
@@ -95,15 +80,7 @@ def index(request, userid):
                 target = Profile.objects.get(userid=userid)
 
                 # S3 Bucket에 존재하는 이미지 삭제
-                # s3_client = boto3.client(
-                #     's3',
-                #     aws_access_key_id=my_settings.AWS_ACCESS_KEY_ID,
-                #     aws_secret_access_key=my_settings.AWS_SECRET_ACCESS_KEY,
-                # )
-                # s3_client.delete_object(
-                #     Bucket=my_settings.AWS_STORAGE_BUCKET_NAME,
-                #     Key=target.img    # 이미지 객체가 아니라 문자열이라서 에러 발생..
-                # )
+                # (... 적용 미정 ...)
 
                 # DB에 존재하는 이미지 삭제
                 target.delete()
@@ -135,14 +112,6 @@ def index(request, userid):
                 # s3에 이미지 추가
                 s3.Bucket(my_settings.AWS_STORAGE_BUCKET_NAME) \
                     .put_object(Key=dest_path, Body=img, ContentType='image/jpg')
-
-                # S3에 이미지 업로드
-                # S3UpDownLoader(
-                #     bucket_name=my_settings.AWS_STORAGE_BUCKET_NAME,
-                #     access_key=my_settings.AWS_ACCESS_KEY_ID,
-                #     secret_key=my_settings.AWS_SECRET_ACCESS_KEY,
-                #     verbose=False
-                # ).upload_file(img_name, dest_path)
 
             except:
                 # S3 ERROR가 발생하고 있지만, S3에 이미지 저장은 잘 되고 있으므로 일단은 정상 진행되게끔...
