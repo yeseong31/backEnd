@@ -12,10 +12,9 @@ urlpatterns = [
     path('<str:userid>/', index, name='index'),
     path('home/', RedirectView.as_view(url='/', permanent=True)),
 
-    # 이미지 등록
-    # path('profile/', image_upload, name="profileUpload"),
-    # path('test/', get_form_data, name="get_form_data"),
-
-    # path('image/', Image.as_view(), name='image'),
+    # 잔디 기능
+    path('<str:userid>/<int:year>/', questions_per_year, name="questions_per_year"),
+    path('<str:userid>/<int:year>/<int:month>/', questions_per_month, name="questions_per_month"),
+    path('<str:userid>/<int:year>/<int:month>/<int:day>', questions_per_day, name="questions_per_day"),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

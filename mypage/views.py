@@ -4,17 +4,13 @@ import os.path
 
 import boto3
 import numpy as np
-from botocore.config import Config
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render, redirect
-from matplotlib import pyplot as plt
 
 from blog.models import Keywords
 from blog.models import User as Question
 from common.forms import FileUploadForm
 from common.models import User, Profile
 from config import my_settings
-from mypage.S3UpDownLoader import S3UpDownLoader
 
 
 class NumpyEncoder(json.JSONEncoder):
@@ -32,7 +28,7 @@ def index(request, userid):
             user = User.objects.get(userid=userid)
 
             # user의 질문 수 계산
-            question_count = count_questions(user)
+            question_count = count_all_questions(user)
             # user의 키워드 빈도 수 계산
             keyword_cnt_info = check_freq_keyword(user)
 
@@ -53,16 +49,8 @@ def index(request, userid):
 
                 img = my_settings.AWS_S3_BUCKET_LINK + src_path
 
-                # try:
-                #     # S3에서 이미지 다운로드
-                #     S3UpDownLoader(
-                #         bucket_name=my_settings.AWS_STORAGE_BUCKET_NAME,
-                #         access_key=my_settings.AWS_ACCESS_KEY_ID,
-                #         secret_key=my_settings.AWS_SECRET_ACCESS_KEY,
-                #         verbose=False
-                #     ).download_file(src_path, dest_path)
-                # except Exception as e:
-                #     print(e)
+            # 잔디 기능 구현
+            my_grass = number_of_question(userid)
 
             context = {
                 'info': {
@@ -71,7 +59,8 @@ def index(request, userid):
                     'image': img,
                     'username': user.username
                 },
-                'keywords': keyword_cnt_info
+                'keywords': keyword_cnt_info,
+                'grass': my_grass
             }
 
             # return render(request, 'mypage/index.html', context)
@@ -95,15 +84,7 @@ def index(request, userid):
                 target = Profile.objects.get(userid=userid)
 
                 # S3 Bucket에 존재하는 이미지 삭제
-                # s3_client = boto3.client(
-                #     's3',
-                #     aws_access_key_id=my_settings.AWS_ACCESS_KEY_ID,
-                #     aws_secret_access_key=my_settings.AWS_SECRET_ACCESS_KEY,
-                # )
-                # s3_client.delete_object(
-                #     Bucket=my_settings.AWS_STORAGE_BUCKET_NAME,
-                #     Key=target.img    # 이미지 객체가 아니라 문자열이라서 에러 발생..
-                # )
+                # (... 적용 미정 ...)
 
                 # DB에 존재하는 이미지 삭제
                 target.delete()
@@ -136,14 +117,6 @@ def index(request, userid):
                 s3.Bucket(my_settings.AWS_STORAGE_BUCKET_NAME) \
                     .put_object(Key=dest_path, Body=img, ContentType='image/jpg')
 
-                # S3에 이미지 업로드
-                # S3UpDownLoader(
-                #     bucket_name=my_settings.AWS_STORAGE_BUCKET_NAME,
-                #     access_key=my_settings.AWS_ACCESS_KEY_ID,
-                #     secret_key=my_settings.AWS_SECRET_ACCESS_KEY,
-                #     verbose=False
-                # ).upload_file(img_name, dest_path)
-
             except:
                 # S3 ERROR가 발생하고 있지만, S3에 이미지 저장은 잘 되고 있으므로 일단은 정상 진행되게끔...
                 # 에러 발생 이유는 아직 자세히 알지 못함...
@@ -159,9 +132,9 @@ def index(request, userid):
             return JsonResponse({'message': "This User doesn't exist", 'status': 400}, status=400)
 
 
-def count_questions(user):
-    questions_obj = Question.objects.filter(userid=user).all()
-    return len(questions_obj)
+# 해당 사용자의 모든 질문의 수를 카운트
+def count_all_questions(user):
+    return len(Question.objects.filter(userid=user).all())
 
 
 # 전달받은 user의 키워드 빈도 수 계산
@@ -178,6 +151,90 @@ def check_freq_keyword(user):
         result.append(list(cnt))
     # print(f'result = {result}')
     return sorted(result, key=lambda x: x[1], reverse=True)  # 키워드 빈도수, 사전순 정렬
+
+
+# 연 단위 사용자 질문 횟수 카운트
+def questions_per_year(request, userid, year):
+    if request.method == 'GET':
+        result = {}
+        for month in range(1, 13):
+            tmp = number_of_question(userid, year, month)
+            if tmp is None:
+                continue
+            result[month] = tmp
+        return JsonResponse({'result': result, 'status': 200}, status=200)
+    else:
+        return JsonResponse({'message': 'invalid request', 'status': 400}, status=400)
+
+
+# 월 단위 사용자 질문 횟수 카운트
+def questions_per_month(request, userid, year, month):
+    if request.method == 'GET':
+        tmp = number_of_question(userid, year, month)
+        if tmp is None:
+            tmp = 0
+        result = {month: tmp}
+        return JsonResponse({'result': result, 'status': 200}, status=200)
+    else:
+        return JsonResponse({'message': 'invalid request', 'status': 400}, status=400)
+
+
+# 일 단위 사용자 질문 횟수 및 정보 확인
+def questions_per_day(request, userid, year, month, day):
+    if request.method == 'GET':
+        # 사용자가 없다면 에러 메시지와 함께 그대로 return
+        if not User.objects.filter(userid=userid).exists():
+            return JsonResponse({'message': "This User doesn't exist", 'status': 400}, status=400)
+
+        target_questions = find_target_questions(userid, year, month, day)
+
+        questions = {}
+        for target_question in target_questions:
+            h, m, s = target_question.time.hour, target_question.time.minute, target_question.time.second
+
+            # 시간 전처리 (한 자리수 -> 두 자리수)
+            h = str(h) if h >= 10 else '0' + str(h)
+            m = str(h) if m >= 10 else '0' + str(m)
+            s = str(s) if s >= 10 else '0' + str(s)
+
+            key = h + ':' + m + ':' + s
+            questions[key] = target_question.question
+        print(questions)
+        return JsonResponse({'result': questions, 'status': 200}, status=200)
+
+    else:
+        return JsonResponse({'message': 'invalid request', 'status': 400}, status=400)
+
+
+# 해당 연월에 해당하는 사용자의 질문 수 계산
+def number_of_question(userid, year, month):
+    # 사용자가 없다면 에러 메시지와 함께 그대로 return
+    if not User.objects.filter(userid=userid).exists():
+        return JsonResponse({'message': "This User doesn't exist", 'status': 400}, status=400)
+
+    # 해당 사용자의 전체 질문들 중 원하는 시간대(월 단위)의 질문들로 필터링
+    target_questions = find_target_questions(userid, year, month)
+    if not target_questions.exists():
+        return None
+
+    day_cnt_list = collections.defaultdict(int)
+
+    # 질문들에 대해 일 단위로 카운트
+    for target_question in target_questions:
+        day_cnt_list[target_question.time.day] += 1
+
+    return day_cnt_list
+
+
+# 사용자의 질문 조회(전달받은 시간 기준)
+def find_target_questions(userid, year, month, day=None):
+    target_time = str(year) + '-'
+    target_time += str(month) if month >= 10 else '0' + str(month)
+    if day is not None:
+        target_time += '-' + str(day) if day >= 10 else '0' + str(day)
+
+    user = User.objects.get(userid=userid)
+    return Question.objects.filter(userid=user, time__startswith=target_time)
 
 
 def get_form_data(request):
