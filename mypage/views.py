@@ -170,7 +170,10 @@ def questions_per_year(request, userid, year):
 # 월 단위 사용자 질문 횟수 카운트
 def questions_per_month(request, userid, year, month):
     if request.method == 'GET':
-        result = {month: number_of_question(userid, year, month)}
+        tmp = number_of_question(userid, year, month)
+        if tmp is None:
+            tmp = 0
+        result = {month: tmp}
         return JsonResponse({'result': result, 'status': 200}, status=200)
     else:
         return JsonResponse({'message': 'invalid request', 'status': 400}, status=400)
@@ -179,27 +182,40 @@ def questions_per_month(request, userid, year, month):
 # 일 단위 사용자 질문 횟수 및 정보 확인
 def questions_per_day(request, userid, year, month, day):
     if request.method == 'GET':
-        pass
+        # 사용자가 없다면 에러 메시지와 함께 그대로 return
+        if not User.objects.filter(userid=userid).exists():
+            return JsonResponse({'message': "This User doesn't exist", 'status': 400}, status=400)
+
+        target_questions = find_target_questions(userid, year, month, day)
+
+        questions = {}
+        for target_question in target_questions:
+            h, m, s = target_question.time.hour, target_question.time.minute, target_question.time.second
+
+            # 시간 전처리 (한 자리수 -> 두 자리수)
+            h = str(h) if h >= 10 else '0' + str(h)
+            m = str(h) if m >= 10 else '0' + str(m)
+            s = str(s) if s >= 10 else '0' + str(s)
+
+            key = h + ':' + m + ':' + s
+            questions[key] = target_question.question
+        print(questions)
+        return JsonResponse({'result': questions, 'status': 200}, status=200)
+
     else:
         return JsonResponse({'message': 'invalid request', 'status': 400}, status=400)
 
 
+# 해당 연월에 해당하는 사용자의 질문 수 계산
 def number_of_question(userid, year, month):
     # 사용자가 없다면 에러 메시지와 함께 그대로 return
     if not User.objects.filter(userid=userid).exists():
         return JsonResponse({'message': "This User doesn't exist", 'status': 400}, status=400)
 
-    user = User.objects.get(userid=userid)
-
-    # 특정 연, 월에 대한 질문을 카운트
-    target_time = str(year) + '-'
-    target_time += str(month) if month >= 10 else '0' + str(month)
-    print(f'target_time: {target_time}')
-
     # 해당 사용자의 전체 질문들 중 원하는 시간대(월 단위)의 질문들로 필터링
-    target_questions = Question.objects.filter(userid=user, time__startswith=target_time)
+    target_questions = find_target_questions(userid, year, month)
     if not target_questions.exists():
-        return {}
+        return None
 
     day_cnt_list = collections.defaultdict(int)
 
@@ -208,6 +224,17 @@ def number_of_question(userid, year, month):
         day_cnt_list[target_question.time.day] += 1
 
     return day_cnt_list
+
+
+# 사용자의 질문 조회(전달받은 시간 기준)
+def find_target_questions(userid, year, month, day=None):
+    target_time = str(year) + '-'
+    target_time += str(month) if month >= 10 else '0' + str(month)
+    if day is not None:
+        target_time += '-' + str(day) if day >= 10 else '0' + str(day)
+
+    user = User.objects.get(userid=userid)
+    return Question.objects.filter(userid=user, time__startswith=target_time)
 
 
 def get_form_data(request):
