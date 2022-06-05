@@ -15,6 +15,6 @@ urlpatterns = [
     # 잔디 기능
     path('<str:userid>/<int:year>/', questions_per_year, name="questions_per_year"),
     path('<str:userid>/<int:year>/<int:month>/', questions_per_month, name="questions_per_month"),
-    path('<str:userid>/<int:year>/<int:month>/<int:day>', questions_per_day, name="questions_per_day"),
+    path('<str:userid>/<int:year>/<int:month>/<int:day>/', questions_per_day, name="questions_per_day"),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
