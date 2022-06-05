@@ -1,6 +1,7 @@
 import collections
 import json
 import os.path
+from datetime import datetime
 
 import boto3
 import numpy as np
@@ -49,8 +50,16 @@ def index(request, userid):
 
                 img = my_settings.AWS_S3_BUCKET_LINK + src_path
 
-            # 잔디 기능 구현
-            my_grass = number_of_question(userid)
+            # 잔디 기능 구현: default 값은 현재 연월
+            year = datetime.today().year
+            print(f'잔디 기능 구현...year: {year}')
+            month = datetime.today().month
+            print(f'잔디 기능 구현...month: {month}')
+
+            tmp = number_of_question(userid, year, month)
+            if tmp is None:
+                tmp = 0
+            my_grass = {month: tmp}
 
             context = {
                 'info': {
