@@ -191,26 +191,8 @@ def questions_per_month(request, userid, year, month):
 # 일 단위 사용자 질문 횟수 및 정보 확인
 def questions_per_day(request, userid, year, month, day):
     if request.method == 'GET':
-        # 사용자가 없다면 에러 메시지와 함께 그대로 return
-        if not User.objects.filter(userid=userid).exists():
-            return JsonResponse({'message': "This User doesn't exist", 'status': 400}, status=400)
-
-        target_questions = find_target_questions(userid, year, month, day)
-
-        questions = {}
-        for target_question in target_questions:
-            h, m, s = target_question.time.hour, target_question.time.minute, target_question.time.second
-
-            # 시간 전처리 (한 자리수 -> 두 자리수)
-            h = str(h) if h >= 10 else '0' + str(h)
-            m = str(h) if m >= 10 else '0' + str(m)
-            s = str(s) if s >= 10 else '0' + str(s)
-
-            key = h + ':' + m + ':' + s
-            questions[key] = target_question.question
-        print(questions)
-        return JsonResponse({'result': questions, 'status': 200}, status=200)
-
+        result = find_question_of_day(userid, year, month, day)
+        return JsonResponse({'result': result, 'status': 200}, status=200)
     else:
         return JsonResponse({'message': 'invalid request', 'status': 400}, status=400)
 
@@ -226,11 +208,12 @@ def number_of_question(userid, year, month):
     if not target_questions.exists():
         return None
 
-    day_cnt_list = collections.defaultdict(int)
+    day_cnt_list = collections.defaultdict(dict)
 
     # 질문들에 대해 일 단위로 카운트
     for target_question in target_questions:
-        day_cnt_list[target_question.time.day] += 1
+        day = target_question.time.day
+        day_cnt_list[day] = find_question_of_day(userid, year, month, day)
 
     return day_cnt_list
 
@@ -238,9 +221,49 @@ def number_of_question(userid, year, month):
 # 사용자의 질문 조회(전달받은 시간 기준)
 def find_target_questions(userid, year, month, day=None):
     target_time = str(year) + '-'
-    target_time += str(month) if month >= 10 else '0' + str(month)
+    target_time += preprocess_time(month)
     if day is not None:
-        target_time += '-' + str(day) if day >= 10 else '0' + str(day)
+        target_time += '-' + preprocess_time(day)
 
     user = User.objects.get(userid=userid)
     return Question.objects.filter(userid=user, time__startswith=target_time)
+
+
+# 시간 천처리
+def preprocess_time(time: int) -> str:
+    return str(time) if time >= 10 else '0' + str(time)
+
+
+def find_question_of_day(userid, year, month, day):
+    # 사용자가 없다면 에러 메시지와 함께 그대로 return
+    if not User.objects.filter(userid=userid).exists():
+        return JsonResponse({'message': "This User doesn't exist", 'status': 400}, status=400)
+
+    # 해당되는 '일'에 등록된 질문 리스트 조회
+    target_questions = find_target_questions(userid, year, month, day)
+
+    tmp = {}
+    for target_question in target_questions:
+        # 시, 분, 초
+        h = preprocess_time(target_question.time.hour)
+        m = preprocess_time(target_question.time.minute)
+        s = preprocess_time(target_question.time.second)
+
+        key = h + ':' + m + ':' + s
+        tmp[key] = target_question.question
+
+    result = {
+        'cnt': len(target_questions),
+        'questions': tmp
+    }
+
+    return result
+
+
+def get_form_data(request):
+    form = FileUploadForm(request.FILES, request.POST)
+    if form.is_valid():
+        print(f'유효한 폼')
+        return JsonResponse({'message': "Success", 'status': 200}, status=200)
+
+    return JsonResponse({'message': "Failure", 'status': 400}, status=400)

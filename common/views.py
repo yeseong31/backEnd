@@ -1,5 +1,4 @@
 import json
-import requests
 
 from django.contrib import auth
 from django.http import JsonResponse, HttpResponse
@@ -7,10 +6,9 @@ from django.shortcuts import render, redirect
 from django.views import View
 
 from config.settings import MINUTE
-from .forms import FileUploadForm
 from .mail import email_auth_num
 
-from common.models import User, UserAuth, UserInfo, Profile
+from common.models import User, UserAuth, UserInfo
 from django.core.mail import EmailMessage
 
 
@@ -196,21 +194,6 @@ class EmailAuthComplete(View):
 
     def get(self, request):
         return JsonResponse({'message': "Go to... '/common/signup/auth/email/comp'", 'status': 200}, status=200)
-
-
-# 이메일 인증 페이지
-def auth_email(request):
-    return JsonResponse({'message': "Go to... '/common/auth/email'", 'status': 200}, status=200)
-
-
-# 이메일 인증 완료 페이지
-def auth_email_complete(request):
-    return JsonResponse({'message': "signup complete.", 'status': 200}, status=200)
-
-
-# 회원가입 완료 페이지
-def signup_complete(request):
-    return JsonResponse({'message': "signup complete.", 'status': 200}, status=200)
 
 
 # ---------------------------------------------------------------------------------------------------------------------
