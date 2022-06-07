@@ -1,8 +1,4 @@
-# coding: utf-8
 import math
-import ssl
-import urllib
-import urllib.request
 
 from django.core.paginator import Paginator
 from django.views import View
@@ -10,15 +6,11 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render
 import json
 from django.core.serializers import serialize
-from nltk import sent_tokenize
-from rest_framework import viewsets
 
-from config.my_settings import CLIENT_ID, CLIENT_SECRET
 from kodeal.views import papago, extract_answer_sentences
 
-from .serializer import EntrySerializer
 from common.models import User as Login_User
-from blog.models import User, Entry, Keywords
+from blog.models import User, Keywords
 
 from config import my_settings
 import openai
@@ -125,11 +117,6 @@ class IndexView(View):
         return HttpResponse(status=200)
 
 
-class EntryViewSet(viewsets.ModelViewSet):
-    queryset = Entry.objects.all()
-    serializer_class = EntrySerializer
-
-
 # main page
 def index(request):
     return render(request, 'home.html')
@@ -157,23 +144,7 @@ def key_word(request):
         )
         return response
 
-# qna action (javascript) 05.30
-def qna_main2(request):
-    if request.method == 'POST':
-        question = request.POST['text_area']  # 질문영역 
-        userid = request.POST['userid']
-        
-        # 자바스크립트 분야에 대한 질문에 한정하기 위해 'javascript' 문장 삽입
-        translate_question = papago(question)
-        pre_question = 'javascript' + '\n' + translate_question + 'with code'
-        
-        # OpenAI Codex의 반환값 받기
-        response = question_to_response(pre_question)
-        # 반환값 중 질문에 대한 답변 추출
-        answer = extract_answer_sentences(response)
-        
-        return answer
-        
+
 # qna action (백엔드)
 def qna_main(request):
     if request.method == 'POST':

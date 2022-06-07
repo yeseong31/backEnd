@@ -244,12 +244,3 @@ def find_target_questions(userid, year, month, day=None):
 
     user = User.objects.get(userid=userid)
     return Question.objects.filter(userid=user, time__startswith=target_time)
-
-
-def get_form_data(request):
-    form = FileUploadForm(request.FILES, request.POST)
-    if form.is_valid():
-        print(f'유효한 폼')
-        return JsonResponse({'message': "Success", 'status': 200}, status=200)
-
-    return JsonResponse({'message': "Failure", 'status': 400}, status=400)
