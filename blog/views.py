@@ -144,7 +144,7 @@ def key_word(request):
         )
         return response
 
-
+      
 # qna action (백엔드)
 def qna_main(request):
     if request.method == 'POST':
