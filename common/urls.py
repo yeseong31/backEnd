@@ -9,7 +9,6 @@ urlpatterns = [
 
     # 회원가입
     path('signup/', SignupView.as_view(), name='signup'),  # Json으로 회원가입 (react용)
-    path('signup/comp/', signup_complete, name='signup_complete'),
 
     # 일반 로그인
     path('login/', LoginView.as_view(), name='login_main'),  # Json으로 로그인 (react용)
