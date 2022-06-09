@@ -208,7 +208,7 @@ def questions_per_day(request, userid, year, month, day):
 
             key = h + ':' + m + ':' + s
             questions[key] = target_question.question
-        print(questions)
+
         return JsonResponse({'result': questions, 'status': 200}, status=200)
 
     else:
@@ -237,10 +237,13 @@ def number_of_question(userid, year, month):
 
 # 사용자의 질문 조회(전달받은 시간 기준)
 def find_target_questions(userid, year, month, day=None):
+    print(f'year: {year}, month: {month}, day: {day}')
     target_time = str(year) + '-'
     target_time += str(month) if month >= 10 else '0' + str(month)
     if day is not None:
-        target_time += '-' + str(day) if day >= 10 else '0' + str(day)
+        target_time += '-'
+        target_time += str(day) if day >= 10 else '0' + str(day)
+    print(f'target time: {target_time}')
 
     user = User.objects.get(userid=userid)
     return Question.objects.filter(userid=user, time__startswith=target_time)
