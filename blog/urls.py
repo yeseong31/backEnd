@@ -6,7 +6,7 @@ app_name = 'blog'
 
 urlpatterns = [
     path('', views.IndexView.as_view(), name='index'),
-    path('<int:id>', views.IndexView.as_view()),
+    path('<int:id>/', views.IndexView.as_view()),
 
     # 03/31 부로 kodeal 디렉터리의 내용을 blog 디렉터리로 통합
 
