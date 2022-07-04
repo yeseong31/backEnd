@@ -74,10 +74,6 @@ class IndexView(View):
 
             # 질문에서 키워드 추출
             keyword_question = "Extract keywords from this text: " + translate_question
-            # keyword_question = "Extract keywords from this text: " + answer
-
-            # 키워드를 추출할 문장 확인
-            print(f'타겟 문장: {translate_question}')
 
             # OpenAI Codex의 반환값 전체를 받아옴
             response = question_to_response(keyword_question)
@@ -88,6 +84,7 @@ class IndexView(View):
                 Keywords(qid=friend, keyword=keyword, userid=user).save()
 
             return JsonResponse({'answer': answer, 'keyword': keyword_answer, 'status': 200}, status=200)
+
         # 전달받은 아이디가 DB에 없으면 400 에러
         else:
             # 테스트 데이터 삽입
@@ -167,12 +164,6 @@ def qna_main(request):
         response = question_to_response(pre_question)
         # 반환값 중 질문에 대한 답변만 추출
         answer = extract_answer_sentences(response)
-
-        # 답변 목록을 메모장으로 저장하여 문장 확인(테스트용 파일 생성)
-        # with open('answer_test_file.txt', 'w') as f:
-        #     sentences = sent_tokenize(answer)
-        #     for sentence in sentences:
-        #         f.write(sentence + '\n')
 
         # 전달 받은 아이디가 DB에 있으면
         if Login_User.objects.filter(userid=userid).exists():
