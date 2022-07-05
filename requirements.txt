@@ -10,11 +10,11 @@ cffi==1.15.0
 charset-normalizer==2.0.10
 click==8.0.3
 colorama==0.4.4
-cryptography==37.0.3
+cryptography==37.0.2
 cycler==0.11.0
 Cython==0.29.28
 defusedxml==0.7.1
-Django==3.1.14
+Django==4.0.5
 django-allauth==0.51.0
 django-cors-headers==3.13.0
 django-sslserver==0.22
