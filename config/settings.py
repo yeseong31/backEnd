@@ -62,6 +62,9 @@ INSTALLED_APPS = [
     # mypage
     # 'storages',
     'mypage.apps.MypageConfig',
+
+    # drf_yasg (API List)
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
