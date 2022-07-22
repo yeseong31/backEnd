@@ -12,7 +12,6 @@ urlpatterns = [
 
     # 일반 로그인
     path('login/', LoginView.as_view(), name='login_main'),  # Json으로 로그인 (react용)
-    path('login/test/', LoginTestView.as_view(), name='login_main_test'),  # HTML5로 로그인 (backend 테스트용)
     path('logout/', logout_main, name='logout_main'),
 
 

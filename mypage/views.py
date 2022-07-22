@@ -1,24 +1,14 @@
 import collections
 import json
-import os.path
 from datetime import datetime
 
 import boto3
-import numpy as np
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 
 from blog.models import Keywords
 from blog.models import User as Question
-from common.forms import FileUploadForm
 from common.models import User, Profile
 from config import my_settings
-
-
-class NumpyEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, np.ndarray):
-            return obj.tolist()
-        return json.JSONEncoder.default(self, obj)
 
 
 def index(request, userid):
@@ -37,24 +27,14 @@ def index(request, userid):
 
             # 마이페이지에 대한 정보(이미지)가 있다면 S3에서 이미지 다운로드
             if Profile.objects.filter(userid=userid).exists():
-
-                # 출발지 (S3 이미지 경로) (DB에 저장된 경로에는 큰따옴표가 붙어 있어 이를 슬라이싱으로 제거하였음)
+                # 출발지 (S3 이미지 경로) (DB에 저장된 경로에는 큰따옴표가 붙어 있어 이를 슬라이싱으로 제거)
                 src_path = json.dumps(str(Profile.objects.get(userid=userid).img))[1:-1]
-                print(f'src_path: {src_path}')
-                # 목적지 (프로젝트 내 이미지 저장 경로)
-                dest_path = 'media/'
-                print(f'dest_path: {dest_path}')
-                # 파일 이름
-                file_name = os.path.basename(src_path)
-                print(f'file_name: {file_name}')
 
                 img = my_settings.AWS_S3_BUCKET_LINK + src_path
 
             # 잔디 기능 구현: default 값은 현재 연월
             year = datetime.today().year
-            print(f'잔디 기능 구현...year: {year}')
             month = datetime.today().month
-            print(f'잔디 기능 구현...month: {month}')
 
             tmp = number_of_question(userid, year, month)
             if tmp is None:
@@ -72,7 +52,6 @@ def index(request, userid):
                 'grass': my_grass
             }
 
-            # return render(request, 'mypage/index.html', context)
             return JsonResponse({'context': context, 'status': 200}, status=200)
 
         # 해당 userid를 가지는 사용자가 없으므로 에러 반환
@@ -91,32 +70,21 @@ def index(request, userid):
             if Profile.objects.filter(userid=userid).exists():
                 # DB에 존재하는 이미지 Get
                 target = Profile.objects.get(userid=userid)
-
-                # S3 Bucket에 존재하는 이미지 삭제
-                # (... 적용 미정 ...)
-
                 # DB에 존재하는 이미지 삭제
                 target.delete()
 
             # 새로운 이미지 등록
-            profile_upload = Profile(
-                userid=user,
-                img=img
-            )
+            profile_upload = Profile(userid=user, img=img)
             profile_upload.save()
 
             # 출발지 (S3 이미지 경로) (DB에 저장된 경로에는 큰따옴표가 붙어 있어 이를 슬라이싱으로 제거하였음)
             # src_path = 'media/' + img_name
-            # print(f'src_path: {src_path}')
-            # # 목적지 (프로젝트 내 이미지 저장 경로)
+            # 목적지 (프로젝트 내 이미지 저장 경로)
             dest_path = json.dumps(str(Profile.objects.get(userid=userid).img))[1:-1]
-            print(f'dest_path: {dest_path}')
-            # # 파일 이름
+            # 파일 이름
             # file_name = os.path.basename(src_path)
-            # print(f'file_name: {file_name}')
 
             try:
-                # s3 객체 생성
                 s3 = boto3.resource(
                     's3',
                     aws_access_key_id=my_settings.AWS_ACCESS_KEY_ID,
@@ -129,7 +97,6 @@ def index(request, userid):
             except:
                 # S3 ERROR가 발생하고 있지만, S3에 이미지 저장은 잘 되고 있으므로 일단은 정상 진행되게끔...
                 # 에러 발생 이유는 아직 자세히 알지 못함...
-                print('S3 ERROR!!!')
                 return JsonResponse({'message': "S3 ERROR... However, the image has been saved successfully, "
                                                 "so continue", 'status': 200}, status=200)
                 # return JsonResponse({'message': "S3 ERROR!", 'status': 400}, status=400)
@@ -237,13 +204,11 @@ def number_of_question(userid, year, month):
 
 # 사용자의 질문 조회(전달받은 시간 기준)
 def find_target_questions(userid, year, month, day=None):
-    print(f'year: {year}, month: {month}, day: {day}')
     target_time = str(year) + '-'
     target_time += str(month) if month >= 10 else '0' + str(month)
     if day is not None:
         target_time += '-'
         target_time += str(day) if day >= 10 else '0' + str(day)
-    print(f'target time: {target_time}')
 
     user = User.objects.get(userid=userid)
     return Question.objects.filter(userid=user, time__startswith=target_time)
