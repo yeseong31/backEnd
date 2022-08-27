@@ -181,10 +181,6 @@ CSRF_TRUSTED_ORIGINS = (
     'localhost:8000',
     '127.0.0.1:8000',
 )
-# CORS_ORIGIN_ALLOW_ALL 값을 True로 함에 따라 주석 처리 (22.03.15)
-# CORS_ORIGIN_WHITELIST = ['http://127.0.0.1:8001',
-#                          'http://localhost:8001',
-#                          ]
 
 CORS_ALLOW_METHODS = (
     'DELETE',
