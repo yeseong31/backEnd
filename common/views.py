@@ -37,8 +37,7 @@ class CheckID(View):
         if User.objects.filter(userid=check_userid).exists():
             return JsonResponse({'message': 'This ID already exists.', 'status': 400}, status=400)
         # 사용 가능한 아이디라면
-        else:
-            return JsonResponse({'message': "It's a usable ID", 'status': 200}, status=200)
+        return JsonResponse({'message': "It's a usable ID", 'status': 200}, status=200)
 
     def get(self, request):
         return JsonResponse({'message': "Go to... '/common/signup/check/id'", 'status': 200}, status=200)
@@ -54,10 +53,6 @@ class SignupView(View):
         userid = data['userid']  # 아이디
         password1 = data['password']  # 비밀번호
         email = data['email']  # 이메일
-        # username = request.POST.get('username', None)  # 이름
-        # userid = request.POST.get('userid', None)  # 아이디
-        # password1 = request.POST.get('password', None)  # 비밀번호
-        # email = request.POST.get('email', None)  # 이메일
 
         # 입력하지 않은 칸 확인
         if not (username and userid and password1 and email):

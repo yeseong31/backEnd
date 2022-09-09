@@ -29,8 +29,7 @@ class IndexView(View):
             return JsonResponse({'userid': userid, 'items': data, 'status': 200}, status=200)
 
         # 만약 서비스 이용자가 아니라면 400 error
-        else:
-            return JsonResponse({'message': 'The user id does not exist.', 'status': 400}, status=400)
+        return JsonResponse({'message': 'The user id does not exist.', 'status': 400}, status=400)
 
     # Codex 기능 수행 함수 (프론트엔드와 연동되어 실질적인 기능 수행)
     def post(self, request):
@@ -87,7 +86,6 @@ class IndexView(View):
             user = Login_User.objects.get(userid='testid')
             friend = User(question=question, code=answer, userid=user)
             friend.save()
-
             return JsonResponse({'message': 'The user id does not exist.', 'status': 400}, status=400)
 
     def put(self, request):

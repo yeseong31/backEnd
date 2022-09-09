@@ -24,12 +24,10 @@ def index(request, userid):
             keyword_cnt_info = check_freq_keyword(user)
 
             img = None
-
             # 마이페이지에 대한 정보(이미지)가 있다면 S3에서 이미지 다운로드
             if Profile.objects.filter(userid=userid).exists():
                 # 출발지 (S3 이미지 경로) (DB에 저장된 경로에는 큰따옴표가 붙어 있어 이를 슬라이싱으로 제거)
                 src_path = json.dumps(str(Profile.objects.get(userid=userid).img))[1:-1]
-
                 img = my_settings.AWS_S3_BUCKET_LINK + src_path
 
             # 잔디 기능 구현: default 값은 현재 연월
@@ -51,12 +49,10 @@ def index(request, userid):
                 'keywords': keyword_cnt_info,
                 'grass': my_grass
             }
-
             return JsonResponse({'context': context, 'status': 200}, status=200)
 
         # 해당 userid를 가지는 사용자가 없으므로 에러 반환
-        else:
-            return JsonResponse({'message': 'This ID does not exist.', 'status': 401}, status=401)
+        return JsonResponse({'message': 'This ID does not exist.', 'status': 401}, status=401)
 
     # 사용자 프로필 등록
     elif request.method == 'POST':
@@ -76,13 +72,8 @@ def index(request, userid):
             # 새로운 이미지 등록
             profile_upload = Profile(userid=user, img=img)
             profile_upload.save()
-
-            # 출발지 (S3 이미지 경로) (DB에 저장된 경로에는 큰따옴표가 붙어 있어 이를 슬라이싱으로 제거하였음)
-            # src_path = 'media/' + img_name
             # 목적지 (프로젝트 내 이미지 저장 경로)
             dest_path = json.dumps(str(Profile.objects.get(userid=userid).img))[1:-1]
-            # 파일 이름
-            # file_name = os.path.basename(src_path)
 
             try:
                 s3 = boto3.resource(
@@ -93,19 +84,13 @@ def index(request, userid):
                 # s3에 이미지 추가
                 s3.Bucket(my_settings.AWS_STORAGE_BUCKET_NAME) \
                     .put_object(Key=dest_path, Body=img, ContentType='image/jpg')
-
             except:
-                # S3 ERROR가 발생하고 있지만, S3에 이미지 저장은 잘 되고 있으므로 일단은 정상 진행되게끔...
-                # 에러 발생 이유는 아직 자세히 알지 못함...
+                # S3 ERROR가 발생하고 있지만, S3에 이미지 저장은 잘 되고 있으므로 일단은 정상 진행되게끔 함
                 return JsonResponse({'message': "S3 ERROR... However, the image has been saved successfully, "
                                                 "so continue", 'status': 200}, status=200)
-                # return JsonResponse({'message': "S3 ERROR!", 'status': 400}, status=400)
-
-            # return redirect('/mypage/profile')
             return JsonResponse({'message': "Success", 'status': 200}, status=200)
 
-        else:
-            return JsonResponse({'message': "This User doesn't exist", 'status': 400}, status=400)
+        return JsonResponse({'message': "This User doesn't exist", 'status': 400}, status=400)
 
 
 # 해당 사용자의 모든 질문의 수를 카운트
