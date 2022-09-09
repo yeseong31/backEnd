@@ -1,15 +1,14 @@
 import json
 
 from django.contrib import auth
-from django.http import JsonResponse, HttpResponse
-from django.shortcuts import render, redirect
+from django.core.mail import EmailMessage
+from django.http import JsonResponse
+from django.shortcuts import render
 from django.views import View
 
+from common.models import User, UserAuth, UserInfo
 from config.settings import MINUTE
 from .mail import email_auth_num
-
-from common.models import User, UserAuth, UserInfo
-from django.core.mail import EmailMessage
 
 
 def index(request):
@@ -38,8 +37,7 @@ class CheckID(View):
         if User.objects.filter(userid=check_userid).exists():
             return JsonResponse({'message': 'This ID already exists.', 'status': 400}, status=400)
         # 사용 가능한 아이디라면
-        else:
-            return JsonResponse({'message': "It's a usable ID", 'status': 200}, status=200)
+        return JsonResponse({'message': "It's a usable ID", 'status': 200}, status=200)
 
     def get(self, request):
         return JsonResponse({'message': "Go to... '/common/signup/check/id'", 'status': 200}, status=200)
@@ -55,10 +53,6 @@ class SignupView(View):
         userid = data['userid']  # 아이디
         password1 = data['password']  # 비밀번호
         email = data['email']  # 이메일
-        # username = request.POST.get('username', None)  # 이름
-        # userid = request.POST.get('userid', None)  # 아이디
-        # password1 = request.POST.get('password', None)  # 비밀번호
-        # email = request.POST.get('email', None)  # 이메일
 
         # 입력하지 않은 칸 확인
         if not (username and userid and password1 and email):
@@ -194,41 +188,3 @@ class EmailAuthComplete(View):
 
     def get(self, request):
         return JsonResponse({'message': "Go to... '/common/signup/auth/email/comp'", 'status': 200}, status=200)
-
-
-# ---------------------------------------------------------------------------------------------------------------------
-# 백엔드 로그인
-class LoginTestView(View):
-    def post(self, request):
-        userid = request.POST['userid']
-        password = request.POST['password']
-
-        # 사용자가 로그인 화면에서 뒤로가기를 포함한 동작을 수행하면 강제 로그아웃
-        if request.COOKIES.get('userid') is not None:
-            response = JsonResponse({'message': "Go to... '/login'", 'status': 200}, status=200)
-            response.delete_cookie('userid')
-            response.delete_cookie('username')
-            auth.logout(request)
-            return response
-
-        try:
-            # 해당 아이디의 사용자가 존재한다면
-            if User.objects.filter(userid=userid).exists():
-                user = User.objects.get(userid=userid)
-                # 입력한 비밀번호가 사용자의 비밀번호와 일치한다면
-                if user.check_password(password):
-                    # 로그인 완료
-                    auth.login(request, user, backend='django.contrib.auth.backends.ModelBackend')
-
-                    # auth.login(request, user)
-                    return redirect('/')
-
-                # 그렇지 않다면 400 Error
-                return JsonResponse({'message': "Enter invalid authentication information", 'status': 401}, status=401)
-            else:
-                return JsonResponse({'message': "Bad Request", 'status': 400}, status=400)
-        except KeyError:
-            return JsonResponse({'message': 'INVALID_KEYS', 'status': 400}, status=400)
-
-    def get(self, request):
-        return render(request, 'common/login.html')

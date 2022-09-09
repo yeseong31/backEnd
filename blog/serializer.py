@@ -2,7 +2,7 @@
 
 from rest_framework import serializers
 
-from .models import User, Entry, Keywords
+from .models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -10,10 +10,3 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ('question', 'code', 'time')
 
-
-class EntrySerializer(serializers.ModelSerializer):
-    author = UserSerializer()
-
-    class Meta:
-        model = Entry
-        fields = ('title', 'body', 'created_at', 'status', 'author')

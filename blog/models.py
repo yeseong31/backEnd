@@ -26,21 +26,6 @@ class User(models.Model):
         db_table = 'question'
 
 
-class Entry(models.Model):
-    STATUS_DRAFT = "draft"
-    STATUS_PUBLIC = "public"
-    STATUS_SET = (
-        (STATUS_DRAFT, "초안"),
-        (STATUS_PUBLIC, "공공의"),
-    )
-    title = models.CharField(max_length=128)
-    body = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    status = models.CharField(choices=STATUS_SET, default=STATUS_DRAFT, max_length=8)
-    author = models.ForeignKey(User, related_name='entries', on_delete=models.CASCADE)
-
-
 # 키워드
 class Keywords(models.Model):
     kid = models.AutoField(primary_key=True)
