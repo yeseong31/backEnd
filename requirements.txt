@@ -46,7 +46,7 @@ multidict==6.0.2
 mysqlclient==2.1.0
 nltk==3.6.7
 numpy==1.22.1
-oauthlib==3.2.1
+oauthlib==3.2.2
 openai==0.20.0
 openpyxl==3.0.9
 packaging==21.3
