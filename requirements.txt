@@ -12,7 +12,7 @@ click==8.0.3
 colorama==0.4.4
 coreapi==2.3.3
 coreschema==0.0.4
-cryptography==37.0.2
+cryptography==39.0.1
 cycler==0.11.0
 Cython==0.29.28
 defusedxml==0.7.1
