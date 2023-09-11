@@ -13,7 +13,7 @@ kodeal web page using django<br/>
  저희는 코딩 입문자들도 쉽게 질문을 하고, 원하는 정보를 빠르게 얻어 자습 환경이 부족한 학생과 일반인 등에게 도움이 될 수 있도록 하는 서비스를 개발하고 있습니다. OpenAI Codex를 이용하여 사용자의 질문에 대해 의도가 무엇인지 분석한 결과를 받아 곧바로 보여줌으로써 사용자로 하여금 프로그래밍에 대한 진입장벽을 낮추는 것을 목표로 하고 있습니다. 
  
  ## Details
- [Kodeal: 인공지능 코딩 Q&A 서비스](https://incongruous-net-2ed.notion.site/Kodeal-85e2a6a7ec374eef97258b3b00c63840)
+ [Kodeal: 인공지능 코딩 Q&A 서비스](https://incongruous-net-2ed.notion.site/Kodeal-ba013ea513ae4874a278615437f83610?pvs=4)
 
 ## Getting Started
 
